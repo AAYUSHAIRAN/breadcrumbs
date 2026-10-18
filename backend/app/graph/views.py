@@ -47,16 +47,17 @@ async def why_path(login: str, issue_id: str) -> GraphView | None:
     ]
     edges = [GraphEdge(source="issue", target="repo", label="IN")]
     if tech:
-        nodes.append(GraphNode(id="tech", kind="tech", label=tech))
+        label = f"{tech} · {round(level * 100)}" if level is not None else tech
+        nodes.append(GraphNode(id="tech", kind="tech", label=label, detail="your skill level, 0–100"))
         edges.append(GraphEdge(source="issue", target="tech", label="NEEDS"))
         if level is not None:
-            edges.append(GraphEdge(source="user", target="tech", label=f"KNOWS · {round(level * 100)}"))
+            edges.append(GraphEdge(source="user", target="tech", label="KNOWS"))
     if reply is not None:
         nodes.append(GraphNode(id="reply", kind="fact", label=f"replies in {_hours(reply)}", detail="median, recent PRs"))
-        edges.append(GraphEdge(source="repo", target="reply", label="maintainers"))
+        edges.append(GraphEdge(source="repo", target="reply", label=""))
     if newcomers:
         nodes.append(GraphNode(id="newcomers", kind="fact", label=f"{newcomers} newcomers merged", detail="last 90 days"))
-        edges.append(GraphEdge(source="repo", target="newcomers", label="newcomers"))
+        edges.append(GraphEdge(source="repo", target="newcomers", label=""))
     for p in past:
         nodes.append(GraphNode(id=f"past:{p}", kind="issue", label=_short(p), detail="you worked on this"))
         edges += [
@@ -76,13 +77,15 @@ async def trail_graph(login: str) -> GraphView | None:
     nodes: dict[str, GraphNode] = {"user": GraphNode(id="user", kind="user", label=name or login, detail=f"@{login}")}
     edges: list[GraphEdge] = []
 
-    def tech(t: str) -> str:
-        nodes.setdefault(f"tech:{t}", GraphNode(id=f"tech:{t}", kind="tech", label=t))
+    def tech(t: str, level: float | None = None) -> str:
+        # The level goes on the node, not the edge: many KNOWS edges meet at "you" and their labels would pile up.
+        label = f"{t} · {round(level * 100)}" if level is not None else t
+        nodes.setdefault(f"tech:{t}", GraphNode(id=f"tech:{t}", kind="tech", label=label, detail="skill level 0–100"))
         return f"tech:{t}"
 
     for s in skills:
         if s["tech"]:
-            edges.append(GraphEdge(source="user", target=tech(s["tech"]), label=f"KNOWS · {round(s['level'] * 100)}"))
+            edges.append(GraphEdge(source="user", target=tech(s["tech"], s["level"]), label=""))
     for w in work:
         if not w["issue"]:
             continue

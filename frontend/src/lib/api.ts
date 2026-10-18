@@ -1,4 +1,13 @@
-import type { Attempt, Fingerprint, Matches, SkipRequest } from "./contracts";
+import type {
+  Attempt,
+  Fingerprint,
+  GraphView,
+  IssueCard,
+  IssueDetail,
+  Matches,
+  Preferences,
+  SkipRequest,
+} from "./contracts";
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -25,22 +34,34 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 const user = (login: string) => `/users/${encodeURIComponent(login)}`;
 
+/** "owner/repo#123" → "owner/repo/123", the path form the API and our routes use. */
+export const issuePath = (issueId: string) => issueId.replace("#", "/");
+
 export const api = {
   fingerprint: (login: string) => request<Fingerprint>(`${user(login)}/fingerprint`),
+  setPreferences: (login: string, prefs: Preferences) =>
+    request<Fingerprint>(`${user(login)}/preferences`, { method: "PUT", body: JSON.stringify(prefs) }),
   matches: (login: string) => request<Matches>(`${user(login)}/matches`),
+  issue: (login: string, issueId: string) => request<IssueDetail>(`${user(login)}/issues/${issuePath(issueId)}`),
+  why: (login: string, issueId: string) => request<GraphView>(`${user(login)}/issues/${issuePath(issueId)}/why`),
+  saved: (login: string) => request<IssueCard[]>(`${user(login)}/saved`),
+  save: (login: string, card: IssueCard) =>
+    request<void>(`${user(login)}/saved`, { method: "POST", body: JSON.stringify(card) }),
+  unsave: (login: string, issueId: string) =>
+    request<void>(`${user(login)}/saved/${issuePath(issueId)}`, { method: "DELETE" }),
+  skip: (login: string, issueId: string, reason: SkipRequest["reason"]) =>
+    request<void>(`${user(login)}/issues/${issuePath(issueId)}/skip`, {
+      method: "POST",
+      body: JSON.stringify({ reason }),
+    }),
   attempts: (login: string) => request<Attempt[]>(`${user(login)}/attempts`),
+  attempt: (login: string, issueId: string) => request<Attempt>(`${user(login)}/attempts/${issuePath(issueId)}`),
   pick: (login: string, issueId: string, force = false) =>
     request<Attempt>(`${user(login)}/attempts`, {
       method: "POST",
       body: JSON.stringify({ issue_id: issueId, force }),
     }),
-  skip: (login: string, issueId: string, reason: SkipRequest["reason"]) => {
-    const [repo, number] = issueId.split("#");
-    return request<void>(`${user(login)}/issues/${repo}/${number}/skip`, {
-      method: "POST",
-      body: JSON.stringify({ reason }),
-    });
-  },
+  trailGraph: (login: string) => request<GraphView>(`${user(login)}/graph`),
 };
 
 /** The 409 body from POST /attempts when the issue was taken since it was shown. */
@@ -49,4 +70,13 @@ export interface Unavailable {
   reason: "closed" | "assigned" | "pr_open" | "claimed" | "not_found";
   message: string;
   detail_url: string | null;
+}
+
+/** Parse "https://github.com/o/r/issues/12" or "o/r#12" into "o/r#12". */
+export function parseIssueRef(input: string): string | null {
+  const s = input.trim();
+  const url = s.match(/github\.com\/([\w.-]+)\/([\w.-]+)\/issues\/(\d+)/);
+  if (url) return `${url[1]}/${url[2]}#${url[3]}`;
+  const short = s.match(/^([\w.-]+)\/([\w.-]+)#(\d+)$/);
+  return short ? `${short[1]}/${short[2]}#${short[3]}` : null;
 }

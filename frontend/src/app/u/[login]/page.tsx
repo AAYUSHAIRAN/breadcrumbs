@@ -1,12 +1,12 @@
 import { Suspense } from "react";
 
-import { UserView } from "@/components/UserView";
+import { RememberUser } from "@/components/shell/RememberUser";
 
-// The page is a static shell; UserView fetches from the API in the browser.
-export default function UserPage() {
+// Shareable link: /u/<login> remembers the user and opens their home.
+export default function UserLink() {
   return (
     <Suspense>
-      <UserView />
+      <RememberUser />
     </Suspense>
   );
 }

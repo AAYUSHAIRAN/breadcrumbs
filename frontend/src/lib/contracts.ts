@@ -35,6 +35,12 @@ export interface Skill {
   source: "inferred" | "manual" | "learned";
 }
 
+export interface Preferences {
+  languages: string[]; // empty = use the user's strongest languages
+  difficulty: "auto" | "easy" | "medium" | "hard"; // auto = one step above their level
+  hours_per_week: number;
+}
+
 export interface Fingerprint {
   login: string;
   name: string | null;
@@ -43,6 +49,7 @@ export interface Fingerprint {
   skills: Skill[];
   merged_prs: number;
   dependencies: string[]; // packages from dependency files, e.g. "npm:react", "pypi:fastapi"
+  preferences: Preferences;
 }
 
 // --- Discovery ---------------------------------------------------------------
@@ -75,12 +82,34 @@ export interface IssueCard {
   newcomer_merges_90d: number; // merged PRs by non-bot, non-maintainer authors seen once in recent PRs
   repo_stars: number;
   in_dependencies: boolean;
+  tech: string; // the skill this issue draws on
+  breakdown: Record<"skill" | "difficulty" | "maintainer" | "newcomers" | "freshness", number>;
+  saved: boolean;
   why: WhyChip[];
 }
 
 export interface Matches {
   login: string;
   issues: IssueCard[];
+  stale: boolean;
+}
+
+export interface RepoHealth {
+  repo: string;
+  stars: number;
+  reply_hours: number | null;
+  newcomer_merges_90d: number;
+  newcomer_merged: number;
+  newcomer_closed: number;
+}
+
+export interface IssueDetail {
+  card: IssueCard;
+  body: string; // markdown
+  comments: number;
+  claimed_by: string | null;
+  repo: RepoHealth;
+  attempt_id: string | null;
   stale: boolean;
 }
 
@@ -170,4 +199,25 @@ export interface Draft {
   kind: "claim_comment" | "setup" | "pr_description" | "review_explainer";
   text: string;
   sources: string[];
+}
+
+// --- Graph views -------------------------------------------------------------------
+
+export interface GraphNode {
+  id: string;
+  kind: "user" | "tech" | "issue" | "repo" | "fact";
+  label: string;
+  detail: string;
+}
+
+export interface GraphEdge {
+  source: string;
+  target: string;
+  label: string;
+}
+
+export interface GraphView {
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+  cypher: string;
 }

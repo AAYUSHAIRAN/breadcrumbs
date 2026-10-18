@@ -31,7 +31,19 @@ backend/app/
 └── graph/
     ├── schema.py     indexes
     ├── progress.py   users, skills, attempts, events, skips
-    └── status.py     attempt status machine
+    ├── status.py     attempt status machine
+    └── views.py      graph views for the UI ("why this match", "your trail"), each with its Cypher
+
+frontend/src/
+├── app/              routes: / (landing), /start (onboarding), and the app: /home, /discover,
+│                     /issues/[owner]/[repo]/[number], /trail, /trail/[owner]/[repo]/[number], /profile
+├── components/
+│   ├── screens/      one component per screen
+│   ├── graph/        GraphView: deterministic SVG graph with "see the query"
+│   ├── issues/       issue rows, summary panel, score breakdown, actions (pick, save, skip with undo)
+│   ├── attempts/     stepper, timeline, next-step rules
+│   └── shell/        sidebar app frame
+└── lib/              API client, SWR hooks, session (remembered username), contracts
 ```
 
 ## Decisions
@@ -82,6 +94,16 @@ Attempt status: `selected → in_progress → pr_open → in_review ⇄ changes_
 | T1.5 | Skip (`SKIPPED`), and recheck the claim at pick time | B6, C3 | A | ✔️ |
 | T1.6 | UI: landing, skill bars, issue cards (why-chips, fit and merge-chance meters, details), pick and skip, your trail | A1, B1, B5 | B | ✔️ |
 
+### Phase UI: Product UI and graph visuals
+| # | Task | Journeys | Owner | Status |
+|---|---|---|---|---|
+| U1 | App shell: sidebar nav (Home, Discover, My trail, Profile), remembered user, toasts, skeletons, empty states, mobile | — | B | ✔️ |
+| U2 | Onboarding `/start`: username → "reading your GitHub" → profile reveal, confirm search languages, difficulty, hours per week | A1, A5 | B | ✔️ |
+| U3 | Discover (filters, list + detail panel, keyboard) and Issue page (rendered issue, score breakdown, repo health); save for later | B1–B7 | B | ✔️ |
+| U4 | "Why this match" graph: write issue → tech/repo into the graph, draw the real Cypher path, "see the query" toggle | B5 | A + B | ✔️ |
+| U5 | Workspace per attempt: progress stepper, next-step card, tabs (Guide and Timeline work; Code map and Past PRs fill in with T2.2–T2.4) | C1–C6, D, E | B | ✔️ |
+| U6 | Home dashboard, My trail, Profile with skill bars and "your trail" graph (attempts → repos → skills learned) | F3, G3 | A + B | ✔️ |
+
 ### Phase 2: Attempt and guidance
 | # | Task | Journeys | Owner | Status |
 |---|---|---|---|---|
@@ -116,7 +138,7 @@ Attempt status: `selected → in_progress → pr_open → in_review ⇄ changes_
 
 **Demo path:** A1 → B1 → B5 → C1 → C2 → C4 → C5 → C6 → D1/D2 → E1 → F1 → F2 → G3
 
-**Totals:** 21 build (13 P0 + 8 P1) · 1 stretch · 4 slides · 32 cut
+**Totals:** 23 build (13 P0 + 8 P1 + 2 P2) · 1 stretch · 4 slides · 30 cut
 
 | # | Journey | Pri | Scope | Status |
 |---|---|---|---|---|
@@ -125,7 +147,7 @@ Attempt status: `selected → in_progress → pr_open → in_review ⇄ changes_
 | A2 | Already contributes → import past merged PRs, higher level | P1 | ✅ | ⬜ |
 | A3 | Little or no public code → ask languages and level | P1 | | |
 | A4 | Sign in with GitHub OAuth | P1 | | |
-| A5 | Edit skills by hand | P2 | | |
+| A5 | Edit skills by hand | P2 | ✅ | ✔️ |
 | A6 | Set goals (PRs per month, tech to learn) | P2 | | |
 | **B. Discover** |||||
 | B1 | Browse ranked issue cards with why-chips (live + cached) | P0 | ✅ | ✔️ |
@@ -134,7 +156,7 @@ Attempt status: `selected → in_progress → pr_open → in_review ⇄ changes_
 | B4 | Paste your own issue or repo URL | P1 | 🟡 | ⬜ |
 | B5 | Inspect issue: why, claim status, maintainer speed, size | P0 | ✅ | ✔️ |
 | B6 | Skip → hidden next time | P1 | ✅ | ✔️ |
-| B7 | Save for later | P2 | | |
+| B7 | Save for later | P2 | ✅ | ✔️ |
 | B8 | No good matches → widen search | P1 | | |
 | B9 | Compare issues side by side | P2 | | |
 | **C. Start an attempt** |||||
@@ -165,7 +187,7 @@ Attempt status: `selected → in_progress → pr_open → in_review ⇄ changes_
 | **F. Merge and grow** |||||
 | F1 | Merged 🎉 → LEARNED → level up | P0 | ✅ | ⬜ |
 | F2 | Next, harder issue (growth ladder) | P0 | ✅ | ⬜ |
-| F3 | Journey timeline | P1 | ✅ | ⬜ |
+| F3 | Journey timeline | P1 | ✅ | ✔️ |
 | F4 | Growth stats chart | P1 | 🖼️ | ⬜ |
 | F5 | Shareable profile or badge | P2 | | |
 | F6 | Regular in one repo → medium or core issues | P2 | | |
