@@ -79,13 +79,13 @@ Attempt status: `selected → in_progress → pr_open → in_review ⇄ changes_
 | T1.2 | Import past merged PRs as completed attempts → starting level | A2 | A | ⬜ |
 | T1.3 | Issue search: repo search per top language (mid-size, active, with labelled issues) + dependency repos, then batched GraphQL for their open issues; drop assigned, PR-linked, stale and seen issues | B1, B3 | A | ✔️ |
 | T1.4 | Check each candidate (claims from comments, maintainer reply time, newcomer merges) → rank → why-chips and merge forecast; remember what we showed (`SHOWN`) | B1, B5 | B | ✔️ |
-| T1.5 | Skip (`SKIPPED`), and recheck the claim at pick time | B6, C3 | A | ⬜ |
+| T1.5 | Skip (`SKIPPED`), and recheck the claim at pick time | B6, C3 | A | ✔️ |
 | T1.6 | UI: landing, skill radar, issue cards, issue detail | A1, B1, B5 | B | ⬜ |
 
 ### Phase 2: Attempt and guidance
 | # | Task | Journeys | Owner | Status |
 |---|---|---|---|---|
-| T2.1 | Pick an issue → Attempt + `selected` event | C1 | A | ⬜ |
+| T2.1 | Pick an issue → Attempt + `selected` event | C1 | A | ✔️ |
 | T2.2 | Code slice: Trees API + raw files + tree-sitter + follow imports → Layer 2, cached by SHA | C4 | A | ⬜ |
 | T2.3 | Reading path query + code map UI that lights up step by step | C4 | B | ⬜ |
 | T2.4 | Past PRs that touched the same files | C5 | A | ⬜ |
@@ -133,14 +133,14 @@ Attempt status: `selected → in_progress → pr_open → in_review ⇄ changes_
 | B3 | "In my dependencies" 📦 | P1 | ✅ | 🔨 |
 | B4 | Paste your own issue or repo URL | P1 | 🟡 | ⬜ |
 | B5 | Inspect issue: why, claim status, maintainer speed, size | P0 | ✅ | 🔨 |
-| B6 | Skip → hidden next time | P1 | ✅ | ⬜ |
+| B6 | Skip → hidden next time | P1 | ✅ | ✔️ |
 | B7 | Save for later | P2 | | |
 | B8 | No good matches → widen search | P1 | | |
 | B9 | Compare issues side by side | P2 | | |
 | **C. Start an attempt** |||||
 | C1 | Pick issue → new Attempt + `selected` event | P0 | ✅ | ⬜ |
 | C2 | Draft claim comment from CONTRIBUTING.md | P0 | ✅ | ⬜ |
-| C3 | Claimed in the meantime → recheck, warn, next best | P1 | ✅ | ⬜ |
+| C3 | Claimed in the meantime → recheck, warn, next best | P1 | ✅ | ✔️ |
 | C4 | Code map: lit-up path entry → target → test | P0 | ✅ | ⬜ |
 | C5 | Past PRs that touched the same files | P0 | ✅ | ⬜ |
 | C6 | Local setup commands from README, CONTRIBUTING, CI | P0 | ✅ | ⬜ |

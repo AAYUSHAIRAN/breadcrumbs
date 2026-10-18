@@ -1,7 +1,8 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from app.contracts import Fingerprint, Matches
+from app.contracts import Attempt, Fingerprint, Matches, SkipRequest
+from app.discovery import availability
 from app.discovery.matches import find_matches
 from app.discovery.search import Candidate, find_candidates
 from app.fingerprint.builder import UserNotFound, fingerprint
@@ -46,3 +47,35 @@ async def get_matches(login: str) -> Matches:
     cards = await find_matches(get_github(), get_registry(), fp, seen)
     await progress.record_shown(fp.login, cards)
     return Matches(login=fp.login, issues=cards, stale=is_stale())
+
+
+@router.post("/{login}/issues/{owner}/{repo}/{number}/skip", status_code=204)
+async def skip(login: str, owner: str, repo: str, number: int, body: SkipRequest) -> None:
+    """B6: hide an issue from future matches, remembering why."""
+    if not await progress.get_user(login):
+        raise HTTPException(404, f"unknown user {login!r}; fetch their fingerprint first")
+    await progress.skip_issue(login, f"{owner}/{repo}#{number}", body.reason)
+
+
+class PickRequest(BaseModel):
+    issue_id: str  # "owner/repo#number"
+    force: bool = False  # pick even if the re-check says it's taken
+
+
+@router.post("/{login}/attempts", status_code=201)
+async def pick(login: str, body: PickRequest) -> Attempt:
+    """C1 + C3: re-check the issue on live GitHub, then start an attempt.
+
+    409 with the reason if it was taken since the user saw it, unless force=true.
+    """
+    if not await progress.get_user(login):
+        raise HTTPException(404, f"unknown user {login!r}; fetch their fingerprint first")
+    try:
+        status = await availability.check(get_github(), body.issue_id)
+    except ValueError as e:
+        raise HTTPException(422, str(e)) from None
+    if status.reason == "not_found" or (not status.available and not body.force):
+        raise HTTPException(409 if status.reason != "not_found" else 404, status.model_dump())
+
+    owner, name, _ = availability.parse_issue_id(body.issue_id)
+    return await progress.start_attempt(login, body.issue_id, status.title, status.url, f"{owner}/{name}")

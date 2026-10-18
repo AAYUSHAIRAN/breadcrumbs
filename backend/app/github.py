@@ -56,7 +56,9 @@ class RateLimited(GitHubError):
 
 class GitHub(Protocol):
     async def rest(self, path: str, params: dict | None = None, ttl: int | None = None) -> Any: ...
-    async def graphql(self, query: str, variables: dict | None = None, ttl: int | None = None) -> Any: ...
+    async def graphql(
+        self, query: str, variables: dict | None = None, ttl: int | None = None, fresh: bool = False
+    ) -> Any: ...
     async def raw_file(self, owner: str, repo: str, ref: str, path: str) -> str: ...
 
 
@@ -87,8 +89,9 @@ class LiveGitHub:
         )
         self.raw = httpx.AsyncClient(base_url="https://raw.githubusercontent.com", timeout=20)
 
-    async def _cached(self, key: str, ttl: int, fetch) -> Any:
-        if (hit := await self.cache.get(key)) is not None:
+    async def _cached(self, key: str, ttl: int, fetch, fresh: bool = False) -> Any:
+        """fresh=True skips the cached copy (e.g. re-checking an issue right before it's picked)."""
+        if not fresh and (hit := await self.cache.get(key)) is not None:
             return hit
         try:
             value = await fetch()
@@ -118,7 +121,9 @@ class LiveGitHub:
 
         return await self._cached(_key("rest", path, params), ttl or self.default_ttl, fetch)
 
-    async def graphql(self, query: str, variables: dict | None = None, ttl: int | None = None) -> Any:
+    async def graphql(
+        self, query: str, variables: dict | None = None, ttl: int | None = None, fresh: bool = False
+    ) -> Any:
         async def fetch():
             resp = await self.http.post("/graphql", json={"query": query, "variables": variables or {}})
             self._check(resp)
@@ -128,7 +133,7 @@ class LiveGitHub:
             return body["data"]
 
         key = _key("graphql", _operation_name(query), query, variables)
-        return await self._cached(key, ttl or self.default_ttl, fetch)
+        return await self._cached(key, ttl or self.default_ttl, fetch, fresh=fresh)
 
     async def raw_file(self, owner: str, repo: str, ref: str, path: str) -> str:
         # Keyed by commit SHA, so content never changes: cache for the stale TTL.
@@ -157,7 +162,9 @@ class MockGitHub:
     async def rest(self, path: str, params: dict | None = None, ttl: int | None = None) -> Any:
         return json.loads(self._load(f"rest/{path.strip('/').replace('/', '__')}.json"))
 
-    async def graphql(self, query: str, variables: dict | None = None, ttl: int | None = None) -> Any:
+    async def graphql(
+        self, query: str, variables: dict | None = None, ttl: int | None = None, fresh: bool = False
+    ) -> Any:
         return json.loads(self._load(f"graphql/{_operation_name(query)}.json"))
 
     async def raw_file(self, owner: str, repo: str, ref: str, path: str) -> str:

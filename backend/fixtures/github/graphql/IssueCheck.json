@@ -1,0 +1,50 @@
+{
+ "repository": {
+  "issue": {
+   "title": "Remove Safari 9 WebGL constants workaround",
+   "url": "https://github.com/CesiumGS/cesium/issues/5315",
+   "state": "OPEN",
+   "assignees": {
+    "nodes": []
+   },
+   "closedByPullRequestsReferences": {
+    "nodes": []
+   },
+   "number": 5315,
+   "repository": {
+    "nameWithOwner": "CesiumGS/cesium"
+   },
+   "comments": {
+    "nodes": [
+     {
+      "createdAt": "2026-09-27T14:37:44Z",
+      "body": "My understanding is that this suggested to \"undo\" the use of `WebGLConstants` and use `WebGLRenderingContext` instead. And my understanding of the current state of affairs is that this is no longer a goal. If this is correct, then this issue could/should be closed.\n",
+      "authorAssociation": "CONTRIBUTOR",
+      "author": {
+       "__typename": "User",
+       "login": "javagl"
+      }
+     },
+     {
+      "createdAt": "2026-09-28T14:28:54Z",
+      "body": "@javagl thanks for flagging this. I have long wondered why we were keeping a big dictionary of constants, which were all already available from a built-in Web API. Simply deleting the dictionary is an appealing idea.\n\n`WebGLRenderingContext` seems to be available everywhere now, including in Web Workers. Where else might the constants be needed? Perhaps in a Node.js environment?",
+      "authorAssociation": "CONTRIBUTOR",
+      "author": {
+       "__typename": "User",
+       "login": "jjhembd"
+      }
+     },
+     {
+      "createdAt": "2026-09-28T15:38:15Z",
+      "body": "There probably are some things (call them 'potential packages') that _could_ be used in a pure Node.js environment, and where the lack of the `WebGLRenderingContext` would be the only thing that is _preventing_ that. Overly suggestive, and as a long shot, one could probably aim for some `@cesium/gltf` package that could be used in plain Node.js, but that package would certainly still require these constants _somewhere_. \n\nSo I'd not be opposed to simply _keeping_ the `WebGLConstants` (skipping the question of which package they should be in for now). The fact that removing them would be an unbelievably wide-ranging breaking change is a good reason to keep them. Of course, **usually**, such \"duplication\" is undesirable, but it's somewhat unlikely that something like `GL_ZERO` will ever be deprecated (or that its value will be changed to `1` \ud83d\ude2c ), so there is no actual maintenance effort or risk associated with keeping that class. \n\n(If this is the goal, then this issue could be closed without further actions - 1592->1591...)",
+      "authorAssociation": "CONTRIBUTOR",
+      "author": {
+       "__typename": "User",
+       "login": "javagl"
+      }
+     }
+    ]
+   }
+  }
+ }
+}
