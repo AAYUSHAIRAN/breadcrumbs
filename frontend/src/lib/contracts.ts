@@ -52,7 +52,7 @@ export interface WhyChip {
     | "skill"
     | "unclaimed"
     | "fast_maintainer"
-    | "first_timers"
+    | "newcomers"
     | "small_scope"
     | "dependency"
     | "warning";
@@ -72,7 +72,8 @@ export interface IssueCard {
   merge_forecast: number;
   claimed: boolean;
   maintainer_reply_hours: number | null;
-  first_timer_merges_90d: number;
+  newcomer_merges_90d: number; // merged PRs by non-bot, non-maintainer authors seen once in recent PRs
+  repo_stars: number;
   in_dependencies: boolean;
   why: WhyChip[];
 }

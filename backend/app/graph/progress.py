@@ -8,7 +8,7 @@ because each event's `key` includes its GitHub ID.
 import uuid
 from datetime import UTC, datetime
 
-from app.contracts import Attempt, Event, Fingerprint, Skill
+from app.contracts import Attempt, Event, Fingerprint, IssueCard, Skill
 from app.db import get_graph
 from app.graph.status import next_status
 
@@ -106,7 +106,32 @@ async def learn(login: str, techs: dict[str, str], boost: float = 0.1) -> None:
     )
 
 
-# --- Skips -------------------------------------------------------------------
+# --- Shown and skipped ------------------------------------------------------------
+
+
+async def record_shown(login: str, cards: list[IssueCard]) -> None:
+    """Our side of the progress: which issues we recommended, when, and how they scored."""
+    if not cards:
+        return
+    await _rows(
+        """
+        MATCH (u:User {login: $login})
+        UNWIND $cards AS c
+        MERGE (r:Repo {name: c.repo})
+        MERGE (i:Issue {id: c.id})
+        SET i.title = c.title, i.url = c.url
+        MERGE (i)-[:IN]->(r)
+        MERGE (u)-[s:SHOWN]->(i)
+        ON CREATE SET s.first_at = $now, s.times = 0
+        SET s.at = $now, s.times = s.times + 1, s.fit = c.fit
+        """,
+        {
+            "login": login,
+            "now": _ts(datetime.now(UTC)),
+            "cards": [{"id": c.id, "repo": c.repo, "title": c.title, "url": c.url, "fit": c.fit} for c in cards],
+        },
+    )
+
 
 
 async def skip_issue(login: str, issue_id: str, reason: str) -> None:

@@ -1,0 +1,512 @@
+{
+ "i0_i0": {
+  "issue": {
+   "number": 6994,
+   "repository": {
+    "nameWithOwner": "badges/shields"
+   },
+   "comments": {
+    "nodes": [
+     {
+      "createdAt": "2021-09-07T18:52:48Z",
+      "body": "Example thunderbird addon api call:\r\nhttps://addons.thunderbird.net/api/v3/addons/addon/unicodify-text-transformer/\r\nAs you say, from first glance it looks like basically a special-case of AMO so probably Mozilla Addons and Thunderbird Addons could share all the same code just with a different base URL (not yet tested).\r\n\r\nIf so, maybe it would make sense to implement this as an optional registry param for mozilla addons. i.e: instead of making it a whole new service the URL for weekly downloads could be `/amo/dw/<addonId>?registry=https%3A//addons.thunderbird.net/api/v3`. Mabe this is a bit of YAGNI but then if there is another mozilla product using the same backend, it can just work..",
+      "authorAssociation": "MEMBER",
+      "author": {
+       "__typename": "User",
+       "login": "chris48s"
+      }
+     },
+     {
+      "createdAt": "2026-10-05T12:43:44Z",
+      "body": "Integrate the Status Badge API for Thunderbird add-ons.\nHi! I'd like to work on this issue. Please assign it to me",
+      "authorAssociation": "NONE",
+      "author": {
+       "__typename": "User",
+       "login": "Kanhaiyaji"
+      }
+     }
+    ]
+   }
+  }
+ },
+ "i0_i1": {
+  "issue": {
+   "number": 5304,
+   "repository": {
+    "nameWithOwner": "ajaxorg/ace"
+   },
+   "comments": {
+    "nodes": [
+     {
+      "createdAt": "2024-09-07T16:02:34Z",
+      "body": "This issue has not received any attention in 1 year. If you want to keep this issue open, please leave a comment below and auto-close will be canceled.",
+      "authorAssociation": "NONE",
+      "author": {
+       "__typename": "Bot",
+       "login": "github-actions"
+      }
+     },
+     {
+      "createdAt": "2024-09-07T18:27:31Z",
+      "body": "Still open",
+      "authorAssociation": "NONE",
+      "author": {
+       "__typename": "User",
+       "login": "Cl0ser01"
+      }
+     },
+     {
+      "createdAt": "2025-09-07T20:03:12Z",
+      "body": "This issue has not received any attention in 1 year. If you want to keep this issue open, please leave a comment below and auto-close will be canceled.",
+      "authorAssociation": "NONE",
+      "author": {
+       "__typename": "Bot",
+       "login": "github-actions"
+      }
+     },
+     {
+      "createdAt": "2025-09-08T21:16:03Z",
+      "body": "Still open",
+      "authorAssociation": "NONE",
+      "author": {
+       "__typename": "User",
+       "login": "Cl0ser01"
+      }
+     },
+     {
+      "createdAt": "2026-09-09T00:17:42Z",
+      "body": "This issue has not received any attention in 1 year. If you want to keep this issue open, please leave a comment below and auto-close will be canceled.",
+      "authorAssociation": "NONE",
+      "author": {
+       "__typename": "Bot",
+       "login": "github-actions"
+      }
+     },
+     {
+      "createdAt": "2026-09-09T20:05:58Z",
+      "body": "Still open",
+      "authorAssociation": "NONE",
+      "author": {
+       "__typename": "User",
+       "login": "Cl0ser01"
+      }
+     },
+     {
+      "createdAt": "2026-09-10T10:17:49Z",
+      "body": "Some android keyboards instead of delete key use text composition to remove characters.\n\nCould you tell more details about what you are trying to do, maybe we could find some other event  to use.",
+      "authorAssociation": "MEMBER",
+      "author": {
+       "__typename": "User",
+       "login": "nightwing"
+      }
+     }
+    ]
+   }
+  }
+ },
+ "i0_i2": {
+  "issue": {
+   "number": 9296,
+   "repository": {
+    "nameWithOwner": "processing/p5.js"
+   },
+   "comments": {
+    "nodes": [
+     {
+      "createdAt": "2026-10-16T14:55:18Z",
+      "body": "Thanks for spotting this!\n\nCurrently, we recommend `keyIsDown` in general, instead of `===`, now. This pattern is backwards compatible now, and can be more robust to changes in the future.\n\nSo the PR on `p5.js` repo addressing this should ideally:\n\n1. Remove the false statement \"key doesn\u2019t update for special keys such as LEFT_ARROW and ENTER\"\n4. Note that key is updated to empty string when released as opposed to rettaining the last value in 1.x\n2. Great to have: update examples to use `keyIsDown`\n3. Also great to have would be a link to the `code` reference page: link to https://p5js.org/reference/p5/code/\n\nPlease do not duplicate the details of the code page, but it does contains an overview of changes from 1.x to 2.x regarding key, code, and keyCode that may be helpful to anyone trying to figure out the differences.\n\nThe latest 1.x API reference is live on v1.p5js.org, if context is helpful; as context, [here](https://github.com/processing/p5.js-compatibility) is a list of all changes between 1.x and 2.x.\n\n@eyaler are you interested in working on this or should I mark it as available for volunteer work?\n",
+      "authorAssociation": "MEMBER",
+      "author": {
+       "__typename": "User",
+       "login": "ksen0"
+      }
+     },
+     {
+      "createdAt": "2026-10-16T15:45:29Z",
+      "body": "@ksen0 also:\n4. key is updated to empty string when released as opposed to rettaining the last value in 1.x\n\nunfortunately i am not currently available to do this.",
+      "authorAssociation": "NONE",
+      "author": {
+       "__typename": "User",
+       "login": "eyaler"
+      }
+     },
+     {
+      "createdAt": "2026-10-16T16:10:37Z",
+      "body": "Thanks for the quick response. Ive added the additional point to the list and will open this for contribution.\n\nI'll mark this one as a good first issue. Note to volunteers who want to work on it: please to carefully review our guidelines, including [AI usage policy](https://github.com/processing/p5.js/blob/main/AI_USAGE_POLICY.md); please do not file PRs without being assigned first. Consistently not following guidelines may result in temporary account suspension; if you're here because you want to apply for GSoC, not following guidelines will likely result in rejection. Thanks in advance for undertanding.",
+      "authorAssociation": "MEMBER",
+      "author": {
+       "__typename": "User",
+       "login": "ksen0"
+      }
+     },
+     {
+      "createdAt": "2026-10-16T18:11:16Z",
+      "body": "Interested in working on this. Can I be assigned?",
+      "authorAssociation": "NONE",
+      "author": {
+       "__typename": "User",
+       "login": "MannXo"
+      }
+     },
+     {
+      "createdAt": "2026-10-16T18:49:21Z",
+      "body": "@MannXo please read the above comment, thank you!",
+      "authorAssociation": "MEMBER",
+      "author": {
+       "__typename": "User",
+       "login": "ksen0"
+      }
+     }
+    ]
+   }
+  }
+ },
+ "i0_i3": {
+  "issue": {
+   "number": 7914,
+   "repository": {
+    "nameWithOwner": "plotly/plotly.js"
+   },
+   "comments": {
+    "nodes": [
+     {
+      "createdAt": "2026-07-21T23:15:02Z",
+      "body": "Thanks for the report! Could you see if this is still happening with the latest [RC](https://cdn.plot.ly/plotly-4.0.0-rc.0.min.js)?",
+      "authorAssociation": "CONTRIBUTOR",
+      "author": {
+       "__typename": "User",
+       "login": "camdecoster"
+      }
+     },
+     {
+      "createdAt": "2026-07-22T06:36:30Z",
+      "body": "I tested it with this latest RC, and the issue is still reproducible",
+      "authorAssociation": "CONTRIBUTOR",
+      "author": {
+       "__typename": "User",
+       "login": "JulienIcon"
+      }
+     },
+     {
+      "createdAt": "2026-07-22T12:34:43Z",
+      "body": "Then it's a bug! Thanks for checking. Our team probably won't be able to look at this for a while, but we can prioritize a PR review if you want to work on it.",
+      "authorAssociation": "CONTRIBUTOR",
+      "author": {
+       "__typename": "User",
+       "login": "camdecoster"
+      }
+     },
+     {
+      "createdAt": "2026-07-23T15:32:00Z",
+      "body": "Hi, I'd like to work on this. I'll submit a PR shortly.",
+      "authorAssociation": "NONE",
+      "author": {
+       "__typename": "User",
+       "login": "nightcityblade"
+      }
+     },
+     {
+      "createdAt": "2026-07-23T19:10:31Z",
+      "body": "@nightcityblade that would be great! Thank you!",
+      "authorAssociation": "NONE",
+      "author": {
+       "__typename": "User",
+       "login": "robertclaus"
+      }
+     },
+     {
+      "createdAt": "2026-07-24T12:51:00Z",
+      "body": "Thanks @nightcityblade !",
+      "authorAssociation": "CONTRIBUTOR",
+      "author": {
+       "__typename": "User",
+       "login": "JulienIcon"
+      }
+     },
+     {
+      "createdAt": "2026-09-09T15:24:54Z",
+      "body": "Hi, if this issue is still active, I would like to give a try on this.",
+      "authorAssociation": "NONE",
+      "author": {
+       "__typename": "User",
+       "login": "devtitus"
+      }
+     },
+     {
+      "createdAt": "2026-09-09T19:26:41Z",
+      "body": "@devtitus Sure, go for it! The issue still exists in the latest plotly.js v4.0.0.\n\nWe recommend that you start by investigating and proposing a potential fix in this issue thread before opening a PR.",
+      "authorAssociation": "CONTRIBUTOR",
+      "author": {
+       "__typename": "User",
+       "login": "emilykl"
+      }
+     }
+    ]
+   }
+  }
+ },
+ "i0_i4": {
+  "issue": {
+   "number": 3262,
+   "repository": {
+    "nameWithOwner": "less/less.js"
+   },
+   "comments": {
+    "nodes": [
+     {
+      "createdAt": "2022-01-07T14:51:27Z",
+      "body": "Is this still relevent? Can I pick this up?",
+      "authorAssociation": "NONE",
+      "author": {
+       "__typename": "User",
+       "login": "Bruce-Hopkins"
+      }
+     },
+     {
+      "createdAt": "2023-04-21T12:09:21Z",
+      "body": "Is this open to work @matthew-dean ?",
+      "authorAssociation": "NONE",
+      "author": {
+       "__typename": "User",
+       "login": "khareyash05"
+      }
+     },
+     {
+      "createdAt": "2023-04-21T17:55:31Z",
+      "body": "Yep! I'm not sure if BackstopJS is still the best current solution, but yes I think it's still needed.",
+      "authorAssociation": "MEMBER",
+      "author": {
+       "__typename": "User",
+       "login": "matthew-dean"
+      }
+     },
+     {
+      "createdAt": "2026-03-30T11:01:07Z",
+      "body": "Hi! I'd like to contribute to this issue. ",
+      "authorAssociation": "NONE",
+      "author": {
+       "__typename": "User",
+       "login": "KunalTiwari-git"
+      }
+     },
+     {
+      "createdAt": "2026-08-27T04:17:23Z",
+      "body": "is it still open \n",
+      "authorAssociation": "NONE",
+      "author": {
+       "__typename": "User",
+       "login": "Traveller-eng"
+      }
+     }
+    ]
+   }
+  }
+ },
+ "i0_i5": {
+  "issue": {
+   "number": 5315,
+   "repository": {
+    "nameWithOwner": "CesiumGS/cesium"
+   },
+   "comments": {
+    "nodes": [
+     {
+      "createdAt": "2026-09-27T14:37:44Z",
+      "body": "My understanding is that this suggested to \"undo\" the use of `WebGLConstants` and use `WebGLRenderingContext` instead. And my understanding of the current state of affairs is that this is no longer a goal. If this is correct, then this issue could/should be closed.\n",
+      "authorAssociation": "CONTRIBUTOR",
+      "author": {
+       "__typename": "User",
+       "login": "javagl"
+      }
+     },
+     {
+      "createdAt": "2026-09-28T14:28:54Z",
+      "body": "@javagl thanks for flagging this. I have long wondered why we were keeping a big dictionary of constants, which were all already available from a built-in Web API. Simply deleting the dictionary is an appealing idea.\n\n`WebGLRenderingContext` seems to be available everywhere now, including in Web Workers. Where else might the constants be needed? Perhaps in a Node.js environment?",
+      "authorAssociation": "CONTRIBUTOR",
+      "author": {
+       "__typename": "User",
+       "login": "jjhembd"
+      }
+     },
+     {
+      "createdAt": "2026-09-28T15:38:15Z",
+      "body": "There probably are some things (call them 'potential packages') that _could_ be used in a pure Node.js environment, and where the lack of the `WebGLRenderingContext` would be the only thing that is _preventing_ that. Overly suggestive, and as a long shot, one could probably aim for some `@cesium/gltf` package that could be used in plain Node.js, but that package would certainly still require these constants _somewhere_. \n\nSo I'd not be opposed to simply _keeping_ the `WebGLConstants` (skipping the question of which package they should be in for now). The fact that removing them would be an unbelievably wide-ranging breaking change is a good reason to keep them. Of course, **usually**, such \"duplication\" is undesirable, but it's somewhat unlikely that something like `GL_ZERO` will ever be deprecated (or that its value will be changed to `1` \ud83d\ude2c ), so there is no actual maintenance effort or risk associated with keeping that class. \n\n(If this is the goal, then this issue could be closed without further actions - 1592->1591...)",
+      "authorAssociation": "CONTRIBUTOR",
+      "author": {
+       "__typename": "User",
+       "login": "javagl"
+      }
+     }
+    ]
+   }
+  }
+ },
+ "i0_i6": {
+  "issue": {
+   "number": 6791,
+   "repository": {
+    "nameWithOwner": "plotly/plotly.js"
+   },
+   "comments": {
+    "nodes": [
+     {
+      "createdAt": "2023-11-24T21:12:37Z",
+      "body": "Please see this mock: https://raw.githubusercontent.com/plotly/plotly.js/master/test/image/mocks/mapbox_geojson-attributes.json which renders as https://raw.githubusercontent.com/plotly/plotly.js/master/test/image/baselines/mapbox_geojson-attributes.png",
+      "authorAssociation": "CONTRIBUTOR",
+      "author": {
+       "__typename": "User",
+       "login": "archmoj"
+      }
+     },
+     {
+      "createdAt": "2023-11-26T13:59:06Z",
+      "body": "Nice! Thanks, @archmoj. I'll try this out beginning of the week and let you know if it worked for my use case. I'll keep you posted and close this issue in case it did.  ",
+      "authorAssociation": "NONE",
+      "author": {
+       "__typename": "User",
+       "login": "Worschi"
+      }
+     },
+     {
+      "createdAt": "2023-11-29T14:58:38Z",
+      "body": "Hello, the dashed line style does indeed work in geojson layers. I set up a minimal working example to demonstrate: [dashed line in mapbox layer example](https://gist.github.com/Worschi/f7d87580a1589fdb7a94812c30efc9d4)\r\n\r\nI am confident, that I can tweak my code to use geojson lines instead of Scattermapbox traces. I'll go ahead an close this issue now. Although I wonder if the documentation should improve in this regard? Several people looked for this on the internet and could not find solutions. Anyhow, thanks again @archmoj for pointing this out! I'd not have found this in the docs quickly. \r\n",
+      "authorAssociation": "NONE",
+      "author": {
+       "__typename": "User",
+       "login": "Worschi"
+      }
+     },
+     {
+      "createdAt": "2023-11-29T15:23:00Z",
+      "body": "Thanks @Worschi! Good to know that this can be done with a geojson layer. But I'd like to keep this issue open until we investigate adding it to scattermapbox, that will still be more useful if we can get it working.",
+      "authorAssociation": "COLLABORATOR",
+      "author": {
+       "__typename": "User",
+       "login": "alexcjohnson"
+      }
+     },
+     {
+      "createdAt": "2023-11-29T15:52:22Z",
+      "body": "Hi @alexcjohnson, fine with me. I am not sure when/if I'll be able to investigate further. The team already moved on and, for now, settled with not having dashed lines.",
+      "authorAssociation": "NONE",
+      "author": {
+       "__typename": "User",
+       "login": "Worschi"
+      }
+     },
+     {
+      "createdAt": "2024-04-12T16:26:56Z",
+      "body": "@alexcjohnson is this issue still open?",
+      "authorAssociation": "NONE",
+      "author": {
+       "__typename": "User",
+       "login": "kussshhhh"
+      }
+     },
+     {
+      "createdAt": "2024-04-12T18:30:18Z",
+      "body": "hi @kussshhhh \r\nYes, this issue is still open",
+      "authorAssociation": "CONTRIBUTOR",
+      "author": {
+       "__typename": "User",
+       "login": "Coding-with-Adam"
+      }
+     },
+     {
+      "createdAt": "2024-07-10T20:04:39Z",
+      "body": "Any update ?",
+      "authorAssociation": "NONE",
+      "author": {
+       "__typename": "User",
+       "login": "Ayfri"
+      }
+     },
+     {
+      "createdAt": "2024-07-27T17:22:45Z",
+      "body": "is this issue still open?",
+      "authorAssociation": "NONE",
+      "author": {
+       "__typename": "User",
+       "login": "salignatmoandal"
+      }
+     },
+     {
+      "createdAt": "2024-07-28T12:24:33Z",
+      "body": "yes, but I don't know when someone will be able to work on it - we have a very large backlog that we're trying to clear",
+      "authorAssociation": "CONTRIBUTOR",
+      "author": {
+       "__typename": "User",
+       "login": "gvwilson"
+      }
+     }
+    ]
+   }
+  }
+ },
+ "i0_i7": {
+  "issue": {
+   "number": 12107,
+   "repository": {
+    "nameWithOwner": "CesiumGS/cesium"
+   },
+   "comments": {
+    "nodes": [
+     {
+      "createdAt": "2024-08-24T01:10:27Z",
+      "body": "Hey @ggetz I'd like to tackle this issue for JTC ",
+      "authorAssociation": "NONE",
+      "author": {
+       "__typename": "User",
+       "login": "MylesPerHour201"
+      }
+     },
+     {
+      "createdAt": "2024-08-26T14:04:44Z",
+      "body": "@MylesPerHour201 Great!",
+      "authorAssociation": "CONTRIBUTOR",
+      "author": {
+       "__typename": "User",
+       "login": "ggetz"
+      }
+     },
+     {
+      "createdAt": "2024-10-01T02:17:26Z",
+      "body": "Reaching out for a sanity check. \r\nI believe the best route to take is to directly add a `compressedAttributes` input to the `RectangleOutlineGeometry` instance. I believe this would be done in the `.creategeometry` method. This would satisfy the `modifyForEncodedNormals` function, even though `RectangleOutlineGeometry` does not need to compress multiple vertices.",
+      "authorAssociation": "NONE",
+      "author": {
+       "__typename": "User",
+       "login": "MylesPerHour201"
+      }
+     },
+     {
+      "createdAt": "2024-10-03T13:49:25Z",
+      "body": "@jjspace Would you be able to advise on this?",
+      "authorAssociation": "CONTRIBUTOR",
+      "author": {
+       "__typename": "User",
+       "login": "ggetz"
+      }
+     },
+     {
+      "createdAt": "2025-12-11T14:09:22Z",
+      "body": "Thanks for the great repro and Sandcastle super helpful.\n\nShort and friendly explanation\n- What\u2019s happening: the shader expects a vertex attribute called compressedAttributes but the geometry (RectangleOutlineGeometry in your repro) doesn\u2019t provide it, so the engine throws a confusing DeveloperError during shader validation.\n- Why: the engine sometimes modifies the vertex shader to decode packed attributes (normals / st / tangents) into a single compressedAttributes input. If the geometry never produced that attribute, the shader ends up asking for something that doesn\u2019t exist.\n\nEasy workarounds (use one of these now)\n- Make the appearance flat:\n```javascript\nconst appearance = new PerInstanceColorAppearance({ flat: true });\nscene.primitives.add(new Primitive({\n  geometryInstances: rectangleOutlineInstance,\n  appearance,\n  asynchronous: false\n}));\n```\n- Or disable vertex compression on the primitive:\n```javascript\nscene.primitives.add(new Primitive({\n  geometryInstances: rectangleOutlineInstance,\n  appearance: new PerInstanceColorAppearance(),\n  compressVertices: false,\n  asynchronous: false\n}));\n```\nEither of those will avoid the shader expecting compressedAttributes and stop the error.\n\nSuggested fix for the engine (what I\u2019d recommend for a PR)\n- The root cause is a timing/assumption mismatch: we inject a shader input for compressedAttributes without checking whether any geometry in the primitive actually supplies it.\n- A small, conservative change: before adding the compressedAttributes \"in\" declaration + decoding code, check the primitive\u2019s geometry instances to see if any geometry.attributes.compressedAttributes exists. If none do, skip injecting that attribute into the shader.\n- This keeps all current behavior for true compressed geometries (Draco / GeometryPipeline.compressVertices / loaders), but prevents the confusing error for geometries that can\u2019t/ don\u2019t provide compressedAttributes (like RectangleOutlineGeometry).",
+      "authorAssociation": "NONE",
+      "author": {
+       "__typename": "User",
+       "login": "TriangleBear"
+      }
+     },
+     {
+      "createdAt": "2026-08-19T21:44:13Z",
+      "body": "Hi @jjhembd @ggetz,\n\nI'd like to work on this issue as one of my first open source contributions. I saw the analysis from @TriangleBear above and the suggested fix (checking whether any geometry instance actually provides `compressedAttributes` before injecting it into the shader) \u2014 that seems like a solid approach.\n\nI also noticed PR #13197 was opened to address this but the issue is still open with the FCF label, so I wanted to check: is that PR still being worked on, or is this issue free to pick up?\n\nThanks!",
+      "authorAssociation": "NONE",
+      "author": {
+       "__typename": "User",
+       "login": "alizee-dev"
+      }
+     }
+    ]
+   }
+  }
+ }
+}

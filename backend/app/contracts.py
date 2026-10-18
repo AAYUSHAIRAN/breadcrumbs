@@ -64,7 +64,7 @@ class WhyChip(BaseModel):
         "skill",
         "unclaimed",
         "fast_maintainer",
-        "first_timers",
+        "newcomers",
         "small_scope",
         "dependency",
         "warning",
@@ -85,7 +85,8 @@ class IssueCard(BaseModel):
     merge_forecast: float = Field(ge=0, le=1)
     claimed: bool
     maintainer_reply_hours: float | None = None
-    first_timer_merges_90d: int = 0
+    newcomer_merges_90d: int = 0  # merged PRs by non-bot, non-maintainer authors seen once in recent PRs
+    repo_stars: int = 0
     in_dependencies: bool = False
     why: list[WhyChip]
 
