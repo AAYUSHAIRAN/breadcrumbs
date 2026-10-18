@@ -1,26 +1,66 @@
 @import "tailwindcss";
 
+/* Tokens. Chart colours follow the data-viz reference palette:
+   one sequential hue (blue) for magnitudes, status colours only with an icon + label. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --page: #f9f9f7;
+  --surface: #fcfcfb;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #898781;
+  --hairline: #e1e0d9;
+  --border: rgba(11, 11, 11, 0.1);
+  --accent: #2a78d6; /* blue 450: bars, meter fill */
+  --accent-strong: #1c5cab; /* blue 550: buttons */
+  --track: #cde2fb; /* blue 100: meter track */
+  --good: #006300;
+  --good-bg: #e6f4e6;
+  --warn: #8a5a00;
+  --warn-bg: #fdf1d6;
+  --info-bg: #eef3fb;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --page: #0d0d0d;
+    --surface: #1a1a19;
+    --ink: #ffffff;
+    --ink-2: #c3c2b7;
+    --muted: #898781;
+    --hairline: #2c2c2a;
+    --border: rgba(255, 255, 255, 0.1);
+    --accent: #5598e7; /* blue 350 on dark */
+    --accent-strong: #3987e5;
+    --track: #184f95; /* blue 600: darkest track that still clears 2:1 */
+    --good: #0ca30c;
+    --good-bg: #0f2a0f;
+    --warn: #fab219;
+    --warn-bg: #2e2410;
+    --info-bg: #17243a;
   }
 }
 
+@theme inline {
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-hairline: var(--hairline);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-track: var(--track);
+  --color-good: var(--good);
+  --color-good-bg: var(--good-bg);
+  --color-warn: var(--warn);
+  --color-warn-bg: var(--warn-bg);
+  --color-info-bg: var(--info-bg);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--page);
+  color: var(--ink);
 }

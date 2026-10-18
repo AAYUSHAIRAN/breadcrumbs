@@ -79,3 +79,9 @@ async def pick(login: str, body: PickRequest) -> Attempt:
 
     owner, name, _ = availability.parse_issue_id(body.issue_id)
     return await progress.start_attempt(login, body.issue_id, status.title, status.url, f"{owner}/{name}")
+
+
+@router.get("/{login}/attempts")
+async def list_attempts(login: str) -> list[Attempt]:
+    """The user's attempts, most recently active first."""
+    return await progress.list_attempts(login)

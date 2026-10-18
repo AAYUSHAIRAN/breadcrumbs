@@ -80,7 +80,7 @@ Attempt status: `selected → in_progress → pr_open → in_review ⇄ changes_
 | T1.3 | Issue search: repo search per top language (mid-size, active, with labelled issues) + dependency repos, then batched GraphQL for their open issues; drop assigned, PR-linked, stale and seen issues | B1, B3 | A | ✔️ |
 | T1.4 | Check each candidate (claims from comments, maintainer reply time, newcomer merges) → rank → why-chips and merge forecast; remember what we showed (`SHOWN`) | B1, B5 | B | ✔️ |
 | T1.5 | Skip (`SKIPPED`), and recheck the claim at pick time | B6, C3 | A | ✔️ |
-| T1.6 | UI: landing, skill radar, issue cards, issue detail | A1, B1, B5 | B | ⬜ |
+| T1.6 | UI: landing, skill bars, issue cards (why-chips, fit and merge-chance meters, details), pick and skip, your trail | A1, B1, B5 | B | ✔️ |
 
 ### Phase 2: Attempt and guidance
 | # | Task | Journeys | Owner | Status |
@@ -128,11 +128,11 @@ Attempt status: `selected → in_progress → pr_open → in_review ⇄ changes_
 | A5 | Edit skills by hand | P2 | | |
 | A6 | Set goals (PRs per month, tech to learn) | P2 | | |
 | **B. Discover** |||||
-| B1 | Browse ranked issue cards with why-chips (live + cached) | P0 | ✅ | 🔨 |
+| B1 | Browse ranked issue cards with why-chips (live + cached) | P0 | ✅ | ✔️ |
 | B2 | Filter by language, label, size, repo | P1 | | |
-| B3 | "In my dependencies" 📦 | P1 | ✅ | 🔨 |
+| B3 | "In my dependencies" 📦 | P1 | ✅ | ✔️ |
 | B4 | Paste your own issue or repo URL | P1 | 🟡 | ⬜ |
-| B5 | Inspect issue: why, claim status, maintainer speed, size | P0 | ✅ | 🔨 |
+| B5 | Inspect issue: why, claim status, maintainer speed, size | P0 | ✅ | ✔️ |
 | B6 | Skip → hidden next time | P1 | ✅ | ✔️ |
 | B7 | Save for later | P2 | | |
 | B8 | No good matches → widen search | P1 | | |
