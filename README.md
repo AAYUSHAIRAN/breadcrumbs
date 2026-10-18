@@ -1,10 +1,10 @@
-# hackathon
+# Breadcrumbs
 
-Hackathon project — 2026-10.
+**Follow the trail from issue to merged PR.**
 
-## Idea
+Enter your GitHub username. Get open-source issues you can actually get merged — from your first PR to your next one — plus a lit-up trail through the code to the fix.
 
-_TBD_
+See [breadcrumbs_design.md](breadcrumbs_design.md) for the feature and database design.
 
 ## Setup
 
