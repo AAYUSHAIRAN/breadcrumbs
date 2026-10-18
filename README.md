@@ -75,6 +75,46 @@ The graph is the product's memory: skills, preferences, what we showed you and w
 (Repo)─HAS_FACT─▶(RepoFact {text, source})   what Guide learned about a repo, shared with everyone
 ```
 
+### The Cypher the product depends on
+
+No built-in graph algorithms: it's traversals and `MERGE`. Each of these shows up in the app ("See the query") or in Guide's agent trace.
+
+**What not to show you again**: issues you skipped or already picked, excluded before matching.
+```cypher
+MATCH (u:User {login: $login})
+OPTIONAL MATCH (u)-[:SKIPPED]->(s:Issue)
+OPTIONAL MATCH (u)-[:WORKING_ON]->(:Attempt)-[:FOR]->(a:Issue)
+RETURN collect(DISTINCT s.id) + collect(DISTINCT a.id)
+```
+
+**Guide's memory**: read before every run.
+```cypher
+MATCH (:User {login: $login})-[:REMEMBERS]->(m:Memory) RETURN m
+MATCH (:Repo {name: $repo})-[:HAS_FACT]->(f:RepoFact) RETURN f.text, f.source
+```
+
+**Guide learning**: new repo facts saved with `MERGE`, so the same fact is never stored twice and the next newcomer's run starts with it.
+```cypher
+MERGE (r:Repo {name: $repo})
+MERGE (f:RepoFact {id: $id}) ON CREATE SET f.text = $text, f.source = $source
+MERGE (r)-[:HAS_FACT]->(f)
+```
+
+**Your trail**: skills, picked issues with their repos and the skill each needs, and what you learned, in one query.
+```cypher
+MATCH (u:User {login: $login})
+OPTIONAL MATCH (u)-[:WORKING_ON]->(a:Attempt)-[:FOR]->(i:Issue)-[:IN]->(r:Repo)
+OPTIONAL MATCH (i)-[:NEEDS]->(t:Tech)
+WITH u, collect(DISTINCT {issue: i.id, title: i.title, status: a.status, repo: r.name, tech: t.name}) AS work
+OPTIONAL MATCH (u)-[k:KNOWS]->(s:Tech)
+WITH u, work, s, k ORDER BY k.level DESC
+WITH u, work, collect({tech: s.name, level: k.level}) AS skills
+OPTIONAL MATCH (u)-[:LEARNED]->(l:Tech)
+RETURN u.login, u.name, work, skills[..6], collect(l.name)
+```
+
+**Progress over time**: each picked issue is an `Attempt` with an append-only chain of `Event` nodes, deduplicated by GitHub ID (commit SHA, PR number, review ID).
+
 ## The Guide agent
 
 Recommending an issue isn't enough: newcomers still get stuck on "how do I claim this, set it up, and write the PR?". Guide does that work, using the graph as its context and memory:
