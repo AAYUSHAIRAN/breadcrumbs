@@ -1,0 +1,34 @@
+{
+ "repository": {
+  "nameWithOwner": "CesiumGS/cesium",
+  "stargazerCount": 15851,
+  "primaryLanguage": {
+   "name": "JavaScript"
+  },
+  "issue": {
+   "number": 5315,
+   "url": "https://github.com/CesiumGS/cesium/issues/5315",
+   "title": "Remove Safari 9 WebGL constants workaround",
+   "body": "The fix for #2989 is no longer needed: https://twitter.com/grorgwork/status/862784930048114688\r\n\r\nPerhaps in a few years we can remove it when Safari 9 is no longer used.",
+   "createdAt": "2017-05-11T22:09:17Z",
+   "updatedAt": "2026-09-28T15:38:15Z",
+   "state": "OPEN",
+   "labels": {
+    "nodes": [
+     {
+      "name": "type - cleanup"
+     },
+     {
+      "name": "good first issue"
+     },
+     {
+      "name": "category - graphics"
+     }
+    ]
+   },
+   "comments": {
+    "totalCount": 3
+   }
+  }
+ }
+}

@@ -2,7 +2,7 @@ from datetime import UTC, date, datetime, timedelta
 
 from httpx import ASGITransport, AsyncClient
 
-from app.contracts import Fingerprint, Skill
+from app.contracts import Fingerprint, Preferences, Skill
 from app.discovery import search
 from app.discovery.search import RepoPick, available, index_repos, merge
 from app.graph import progress
@@ -58,6 +58,11 @@ def test_top_languages_skips_weak_ones_but_never_returns_nothing():
     assert search.top_languages(strong) == ["python"]
     weak = fp(skills=[("go", "language", 0.05)])
     assert search.top_languages(weak) == ["go"]
+
+
+def test_chosen_languages_override_skills():
+    user = fp(skills=[("python", "language", 0.9)]).model_copy(update={"preferences": Preferences(languages=["rust", "go"])})
+    assert search.top_languages(user) == ["rust", "go"]
 
 
 def test_issues_query_aliases_by_pick_index_and_escapes_names():

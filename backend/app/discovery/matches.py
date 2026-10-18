@@ -10,7 +10,7 @@ from app.github import GitHub
 from app.registry import Registry
 
 CHECK_TOP = 25  # check only the most promising candidates: each check costs API calls
-SHOW = 10
+SHOW = 20
 
 
 async def find_matches(

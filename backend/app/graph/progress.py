@@ -8,7 +8,7 @@ because each event's `key` includes its GitHub ID.
 import uuid
 from datetime import UTC, datetime
 
-from app.contracts import Attempt, Event, Fingerprint, IssueCard, Skill
+from app.contracts import Attempt, Event, Fingerprint, IssueCard, Preferences, Skill
 from app.db import get_graph
 from app.graph.status import next_status
 
@@ -84,7 +84,22 @@ async def get_user(login: str) -> Fingerprint | None:
         level=user["level"],
         merged_prs=user.get("merged_prs", 0),
         dependencies=user.get("dependencies", []),
+        preferences=Preferences(
+            languages=user.get("pref_languages", []),
+            difficulty=user.get("pref_difficulty", "auto"),
+            hours_per_week=user.get("pref_hours", 3),
+        ),
         skills=sorted((Skill(**s) for s in skills if s["tech"] is not None), key=lambda s: s.level, reverse=True),
+    )
+
+
+async def set_preferences(login: str, prefs: Preferences) -> None:
+    await _rows(
+        """
+        MATCH (u:User {login: $login})
+        SET u.pref_languages = $languages, u.pref_difficulty = $difficulty, u.pref_hours = $hours
+        """,
+        {"login": login, "languages": prefs.languages, "difficulty": prefs.difficulty, "hours": prefs.hours_per_week},
     )
 
 
@@ -118,9 +133,13 @@ async def record_shown(login: str, cards: list[IssueCard]) -> None:
         MATCH (u:User {login: $login})
         UNWIND $cards AS c
         MERGE (r:Repo {name: c.repo})
+        SET r.stars = c.stars, r.reply_hours = c.reply_hours, r.newcomer_merges_90d = c.newcomers
         MERGE (i:Issue {id: c.id})
-        SET i.title = c.title, i.url = c.url
+        SET i.title = c.title, i.url = c.url, i.difficulty = c.difficulty
         MERGE (i)-[:IN]->(r)
+        FOREACH (_ IN CASE WHEN c.tech <> '' THEN [1] ELSE [] END |
+            MERGE (t:Tech {name: c.tech})
+            MERGE (i)-[:NEEDS]->(t))
         MERGE (u)-[s:SHOWN]->(i)
         ON CREATE SET s.first_at = $now, s.times = 0
         SET s.at = $now, s.times = s.times + 1, s.fit = c.fit
@@ -128,10 +147,41 @@ async def record_shown(login: str, cards: list[IssueCard]) -> None:
         {
             "login": login,
             "now": _ts(datetime.now(UTC)),
-            "cards": [{"id": c.id, "repo": c.repo, "title": c.title, "url": c.url, "fit": c.fit} for c in cards],
+            "cards": [
+                {
+                    "id": c.id, "repo": c.repo, "title": c.title, "url": c.url, "fit": c.fit, "tech": c.tech,
+                    "difficulty": c.difficulty, "stars": c.repo_stars, "reply_hours": c.maintainer_reply_hours,
+                    "newcomers": c.newcomer_merges_90d,
+                }
+                for c in cards
+            ],
         },
     )
 
+
+
+async def save_issue(login: str, card: IssueCard) -> None:
+    """B7: bookmark an issue. The card is stored on the edge so the saved list needs no GitHub calls."""
+    await record_shown(login, [card])
+    await _rows(
+        """
+        MATCH (u:User {login: $login}), (i:Issue {id: $id})
+        MERGE (u)-[s:SAVED]->(i)
+        SET s.at = $now, s.card = $card
+        """,
+        {"login": login, "id": card.id, "now": _ts(datetime.now(UTC)), "card": card.model_dump_json()},
+    )
+
+
+async def unsave_issue(login: str, issue_id: str) -> None:
+    await _rows("MATCH (:User {login: $login})-[s:SAVED]->(:Issue {id: $id}) DELETE s", {"login": login, "id": issue_id})
+
+
+async def saved_issues(login: str) -> list[IssueCard]:
+    rows = await _rows(
+        "MATCH (:User {login: $login})-[s:SAVED]->(:Issue) RETURN s.card ORDER BY s.at DESC", {"login": login}
+    )
+    return [IssueCard.model_validate_json(r[0]).model_copy(update={"saved": True}) for r in rows]
 
 
 async def skip_issue(login: str, issue_id: str, reason: str) -> None:

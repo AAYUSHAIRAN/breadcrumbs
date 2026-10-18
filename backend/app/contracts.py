@@ -46,6 +46,12 @@ class Skill(BaseModel):
     source: Literal["inferred", "manual", "learned"] = "inferred"
 
 
+class Preferences(BaseModel):
+    languages: list[str] = []  # empty = use the user's strongest languages
+    difficulty: Literal["auto", "easy", "medium", "hard"] = "auto"  # auto = one step above their level
+    hours_per_week: int = Field(default=3, ge=1, le=40)
+
+
 class Fingerprint(BaseModel):
     login: str
     name: str | None = None
@@ -54,6 +60,7 @@ class Fingerprint(BaseModel):
     skills: list[Skill]
     merged_prs: int = 0
     dependencies: list[str] = []  # packages from dependency files, e.g. "npm:react", "pypi:fastapi"
+    preferences: Preferences = Preferences()
 
 
 # --- Discovery ---------------------------------------------------------------
@@ -88,6 +95,9 @@ class IssueCard(BaseModel):
     newcomer_merges_90d: int = 0  # merged PRs by non-bot, non-maintainer authors seen once in recent PRs
     repo_stars: int = 0
     in_dependencies: bool = False
+    tech: str = ""  # the skill this issue draws on, e.g. "javascript"
+    breakdown: dict[str, float] = {}  # fit components, each 0–1: skill, difficulty, maintainer, newcomers, freshness
+    saved: bool = False
     why: list[WhyChip]
 
 
@@ -95,6 +105,25 @@ class Matches(BaseModel):
     login: str
     issues: list[IssueCard]
     stale: bool = False  # true if any GitHub data came from the fallback cache
+
+
+class RepoHealth(BaseModel):
+    repo: str
+    stars: int
+    reply_hours: float | None
+    newcomer_merges_90d: int
+    newcomer_merged: int
+    newcomer_closed: int
+
+
+class IssueDetail(BaseModel):
+    card: IssueCard
+    body: str  # markdown
+    comments: int
+    claimed_by: str | None = None
+    repo: RepoHealth
+    attempt_id: str | None = None  # set if the user already picked it
+    stale: bool = False
 
 
 class SkipRequest(BaseModel):
@@ -185,3 +214,25 @@ class Draft(BaseModel):
     kind: Literal["claim_comment", "setup", "pr_description", "review_explainer"]
     text: str
     sources: list[str] = []  # files the draft is based on, e.g. CONTRIBUTING.md
+
+
+# --- Graph views ---------------------------------------------------------------
+
+
+class GraphNode(BaseModel):
+    id: str
+    kind: Literal["user", "tech", "issue", "repo", "fact"]
+    label: str
+    detail: str = ""
+
+
+class GraphEdge(BaseModel):
+    source: str
+    target: str
+    label: str
+
+
+class GraphView(BaseModel):
+    nodes: list[GraphNode]
+    edges: list[GraphEdge]
+    cypher: str  # the query that produced it, shown in the UI

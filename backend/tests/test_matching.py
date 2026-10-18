@@ -2,11 +2,11 @@ from datetime import UTC, datetime, timedelta
 
 from httpx import ASGITransport, AsyncClient
 
-from app.contracts import Fingerprint, Skill
+from app.contracts import Fingerprint, Preferences, Skill
 from app.discovery import search
 from app.discovery.checks import Claim, RepoStats, claim_status, index_comments, repo_stats
 from app.discovery.matches import diversify
-from app.discovery.rank import difficulty, difficulty_fit, score
+from app.discovery.rank import difficulty, difficulty_fit, score, target_difficulty
 from app.discovery.search import Candidate
 from app.main import app
 
@@ -146,10 +146,19 @@ def test_difficulty_from_labels_and_size():
     assert difficulty(["bug"], "") == "medium"
 
 
-def test_difficulty_fit_aims_one_step_above_level():
-    assert difficulty_fit("easy", "beginner") == 1
-    assert difficulty_fit("medium", "intermediate") == 1
-    assert difficulty_fit("hard", "beginner") == 0
+def test_difficulty_targets_level_unless_the_user_chose():
+    assert target_difficulty(FP) == "easy"
+    chose_hard = FP.model_copy(update={"preferences": Preferences(difficulty="hard")})
+    assert target_difficulty(chose_hard) == "hard"
+    assert difficulty_fit("easy", "easy") == 1
+    assert difficulty_fit("hard", "easy") == 0
+
+
+def test_card_carries_breakdown_and_tech():
+    card = score(candidate(), FP, GOOD_REPO, FREE, NOW)
+    assert card.tech == "python"
+    assert set(card.breakdown) == {"skill", "difficulty", "maintainer", "newcomers", "freshness"}
+    assert all(0 <= v <= 1 for v in card.breakdown.values())
 
 
 def test_claimed_issue_ranks_far_lower_and_says_why():

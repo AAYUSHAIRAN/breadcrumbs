@@ -89,6 +89,8 @@ def _quote(value: str) -> str:
 
 
 def top_languages(fp: Fingerprint) -> list[str]:
+    if fp.preferences.languages:  # the user chose (onboarding / profile)
+        return fp.preferences.languages[:MAX_LANGUAGES]
     languages = [s.tech for s in fp.skills if s.kind == "language"]
     strong = [s.tech for s in fp.skills if s.kind == "language" and s.level >= MIN_LANGUAGE_LEVEL]
     return (strong or languages[:1])[:MAX_LANGUAGES]

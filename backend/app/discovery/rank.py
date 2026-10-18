@@ -46,8 +46,14 @@ def difficulty(labels: list[str], body: str) -> Difficulty:
     return "medium"
 
 
-def difficulty_fit(issue: Difficulty, level: Level) -> float:
-    gap = abs(DIFFICULTIES.index(issue) - DIFFICULTIES.index(TARGET[level]))
+def target_difficulty(fp: Fingerprint) -> Difficulty:
+    """The user's chosen difficulty, or one step above their level."""
+    chosen = fp.preferences.difficulty
+    return TARGET[fp.level] if chosen == "auto" else chosen
+
+
+def difficulty_fit(issue: Difficulty, target: Difficulty) -> float:
+    gap = abs(DIFFICULTIES.index(issue) - DIFFICULTIES.index(target))
     return 1 - 0.5 * gap
 
 
@@ -125,7 +131,7 @@ def score(c: Candidate, fp: Fingerprint, stats: RepoStats | None, claim: Claim, 
     skill, tech = skill_score(c, fp)
     parts = {
         "skill": skill,
-        "difficulty": difficulty_fit(diff, fp.level),
+        "difficulty": difficulty_fit(diff, target_difficulty(fp)),
         "maintainer": maintainer_score(stats),
         "newcomers": newcomer_score(stats),
         "freshness": freshness(c.updated_at, now),
@@ -158,6 +164,8 @@ def score(c: Candidate, fp: Fingerprint, stats: RepoStats | None, claim: Claim, 
         maintainer_reply_hours=stats.reply_hours if stats else None,
         newcomer_merges_90d=stats.newcomer_merges_90d if stats else 0,
         in_dependencies=c.source == "dependency",
+        tech=tech if tech != "any" else "",
+        breakdown={k: round(v, 3) for k, v in parts.items()},
         why=why_chips(c, fp, stats, claim, diff, tech, now),
     )
 
@@ -167,7 +175,7 @@ def prerank(c: Candidate, fp: Fingerprint, now: datetime) -> float:
     skill, _ = skill_score(c, fp)
     return (
         WEIGHTS["skill"] * skill
-        + WEIGHTS["difficulty"] * difficulty_fit(difficulty(c.labels, c.body), fp.level)
+        + WEIGHTS["difficulty"] * difficulty_fit(difficulty(c.labels, c.body), target_difficulty(fp))
         + WEIGHTS["freshness"] * freshness(c.updated_at, now)
         + (DEPENDENCY_BONUS if c.source == "dependency" else 0)
     )
