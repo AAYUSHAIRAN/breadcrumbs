@@ -9,6 +9,7 @@ import { hours } from "@/lib/format";
 import { useAttempt, useIssue } from "@/lib/hooks";
 import { useLogin } from "@/lib/session";
 import { nextStep, STATUS_LABEL } from "../attempts/progress";
+import { GuidePanel } from "../attempts/GuidePanel";
 import { Stepper } from "../attempts/Stepper";
 import { Timeline } from "../attempts/Timeline";
 import { ArrowLeftIcon, ExternalIcon } from "../ui/Icons";
@@ -149,6 +150,10 @@ export function WorkspaceView() {
 
       <div role="tabpanel">
         {tab === "Guide" && (
+          <GuidePanel
+            login={login}
+            issueId={issueId}
+            fallback={
           <ol className="grid gap-6 lg:grid-cols-3">
             <li className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-5">
               <p className="font-medium">1. Claim it</p>
@@ -175,6 +180,8 @@ export function WorkspaceView() {
               )}
             </li>
           </ol>
+                    }
+          />
         )}
         {tab === "Code map" && (
           <ComingNext

@@ -1,5 +1,8 @@
 import type {
   Attempt,
+  Guide,
+  GuideFact,
+  Memory,
   Fingerprint,
   GraphView,
   IssueCard,
@@ -62,6 +65,12 @@ export const api = {
       body: JSON.stringify({ issue_id: issueId, force }),
     }),
   trailGraph: (login: string) => request<GraphView>(`${user(login)}/graph`),
+  guide: (login: string, issueId: string) => request<Guide | Record<string, never>>(`${user(login)}/attempts/${issuePath(issueId)}/guide`),
+  writeGuide: (login: string, issueId: string) =>
+    request<Guide>(`${user(login)}/attempts/${issuePath(issueId)}/guide`, { method: "POST" }),
+  memory: (login: string) => request<{ memories: Memory[] }>(`${user(login)}/memory`),
+  forget: (login: string, id: string) => request<void>(`${user(login)}/memory/${id}`, { method: "DELETE" }),
+  repoFacts: (login: string, repo: string) => request<GuideFact[]>(`${user(login)}/repo-facts/${repo}`),
 };
 
 /** The 409 body from POST /attempts when the issue was taken since it was shown. */

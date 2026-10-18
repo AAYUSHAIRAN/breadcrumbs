@@ -7,6 +7,7 @@ import { api } from "@/lib/api";
 import { useFingerprint, useTrailGraph } from "@/lib/hooks";
 import { useLogin } from "@/lib/session";
 import { GraphView } from "../graph/GraphView";
+import { MemoryList } from "../MemoryList";
 import { PreferencesForm } from "../PreferencesForm";
 import { SkillBars } from "../SkillBars";
 import { PageHeader, Skeleton } from "../ui/States";
@@ -68,6 +69,8 @@ export function ProfileView() {
         <p className="text-sm text-ink-2">Your strongest skills, the issues you&apos;ve picked, their repos, and what you&apos;ve learned. It grows with every attempt.</p>
         {graph.data ? <GraphView view={graph.data} levels={TRAIL_LEVELS} title="Your trail graph" /> : <Skeleton className="h-56" />}
       </section>
+
+      <MemoryList login={login} />
 
       <div className="grid gap-6 lg:grid-cols-2">
         <section className="rounded-xl border border-border bg-surface p-6">

@@ -221,3 +221,38 @@ export interface GraphView {
   edges: GraphEdge[];
   cypher: string;
 }
+
+// --- Guide agent -----------------------------------------------------------------
+
+export interface GuideTraceStep {
+  step: string;
+  detail: string;
+  query: string | null;
+}
+
+export interface GuideFact {
+  fact: string;
+  source: string;
+}
+
+export interface Guide {
+  claim_comment: string;
+  setup_steps: { command: string; why: string }[];
+  pr_title: string;
+  pr_description: string;
+  tips: string[];
+  learned_about_repo: GuideFact[];
+  learned_about_user: GuideFact[];
+  sources: string[];
+  used_repo_facts: number;
+  used_memories: number;
+  trace: GuideTraceStep[];
+  at: string;
+}
+
+export interface Memory {
+  id: string;
+  text: string;
+  kind: string;
+  at: number;
+}

@@ -1,6 +1,8 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
+from app.agent import guide as guide_agent
+from app.agent import memory as agent_memory
 from app.contracts import Attempt, Fingerprint, GraphView, IssueCard, IssueDetail, Matches, Preferences, SkipRequest
 from app.discovery import availability
 from app.discovery.detail import IssueNotFound, issue_detail
@@ -181,3 +183,42 @@ async def get_trail_graph(login: str) -> GraphView:
     if not view:
         raise HTTPException(404, f"unknown user {login!r}")
     return view
+
+
+# --- Guide agent ----------------------------------------------------------------
+
+
+@router.get("/{login}/attempts/{owner}/{repo}/{number}/guide")
+async def get_guide(login: str, owner: str, repo: str, number: int) -> dict:
+    """The last drafts the Guide wrote for this attempt, or {} if none yet."""
+    return await guide_agent.saved_guide(progress.attempt_id(login, _issue_id(owner, repo, number))) or {}
+
+
+@router.post("/{login}/attempts/{owner}/{repo}/{number}/guide")
+async def write_guide(login: str, owner: str, repo: str, number: int) -> dict:
+    """Run the Guide agent: read the repo's rules and the user's graph, write drafts, remember what it learned."""
+    await _user(login)
+    try:
+        return await guide_agent.write_guide(get_github(), login, _issue_id(owner, repo, number))
+    except KeyError:
+        raise HTTPException(404, "no attempt for that issue") from None
+    except guide_agent.GuideUnavailable as e:
+        raise HTTPException(503, str(e)) from None
+
+
+@router.get("/{login}/memory")
+async def get_memory(login: str) -> dict:
+    """What the agents remember about this user."""
+    return {"memories": await agent_memory.memories(login)}
+
+
+@router.delete("/{login}/memory/{memory_id}", status_code=204)
+async def delete_memory(login: str, memory_id: str) -> None:
+    await agent_memory.forget(login, memory_id)
+
+
+
+@router.get("/{login}/repo-facts/{owner}/{repo}")
+async def get_repo_facts(login: str, owner: str, repo: str) -> list[dict]:
+    """What Breadcrumbs has learned about a repo, from every user's Guide runs."""
+    return await guide_agent.repo_facts(f"{owner}/{repo}")
