@@ -1,3 +1,5 @@
+import asyncio
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
@@ -9,10 +11,21 @@ from app.github import reset_stale
 from app.graph.schema import ensure_schema
 from app.routes import users
 
+log = logging.getLogger("breadcrumbs")
+SCHEMA_ATTEMPTS = 10
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await ensure_schema()
+    # On hosts like Railway the database can come up (or become reachable) a few
+    # seconds after the API. Retry instead of crashing; start serving either way.
+    for attempt in range(1, SCHEMA_ATTEMPTS + 1):
+        try:
+            await ensure_schema()
+            break
+        except Exception as e:  # noqa: BLE001 - any connection error: log and retry
+            log.warning("FalkorDB not ready (attempt %d/%d): %s", attempt, SCHEMA_ATTEMPTS, e)
+            await asyncio.sleep(3)
     yield
 
 
@@ -37,8 +50,15 @@ async def stale_flag(request: Request, call_next):
 @app.get("/health")
 async def health() -> dict:
     s = get_settings()
+    try:
+        db_ok = await get_redis().ping()
+    except Exception as e:  # noqa: BLE001 - report, don't crash, so deploys can be debugged
+        db_ok, s_err = False, str(e)
+    else:
+        s_err = None
     return {
-        "ok": await get_redis().ping(),
+        "ok": db_ok,
+        "db_error": s_err,
         "mode": s.mode,
         "services": {"github": s.service_mode("github"), "llm": s.service_mode("llm")},
     }
