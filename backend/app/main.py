@@ -17,7 +17,14 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Breadcrumbs API", lifespan=lifespan)
-app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:3000"], allow_methods=["*"], allow_headers=["*"])
+# Local dev, plus the deployed frontend on Vercel.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_origin_regex=r"https://[\w-]+\.vercel\.app",
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.include_router(users.router)
 
 
