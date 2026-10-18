@@ -8,7 +8,97 @@ See [breadcrumbs_design.md](breadcrumbs_design.md) for the feature and database 
 
 ## Setup
 
-_TBD_
+Needs Docker, [uv](https://docs.astral.sh/uv/) and Node 20+.
+
+```bash
+cp .env.example .env     # MODE=mock works with no keys
+make db                  # FalkorDB on :6379, browser UI on http://localhost:3002
+make api                 # backend on http://localhost:8000 (API docs at /docs)
+make web                 # frontend on http://localhost:3000
+make test                # backend tests (needs `make db`)
+```
+
+```
+backend/app/
+├── config.py         MODE=mock|live, per-service fallback
+├── github.py         live client (TTL cache + stale fallback) or fixtures
+├── cache.py          Redis TTL cache
+├── contracts.py      API models (mirrored in frontend/src/lib/contracts.ts)
+└── graph/
+    ├── schema.py     indexes
+    ├── progress.py   users, skills, attempts, events, skips
+    └── status.py     attempt status machine
+```
+
+## Decisions
+
+- **Live, not pre-loaded.** Issues, repos and PRs come from the GitHub API in real time. Search and API results are cached in Redis (the same FalkorDB instance) with a TTL. They are never written to the graph.
+- **The graph stores progress.** It holds the user's journey (skills, attempts, a timeline of events, what they learned) and our progress with them (issues shown, skipped, selected), plus the code slice for each selected issue.
+- **Progress happens on GitHub, too.** Users push commits and open PRs whenever they like. When they visit, we sync their active attempts from GitHub and append new events, deduplicated by GitHub IDs (commit SHA, PR number, review ID).
+- **No cloning.** Code comes from the Git Trees API plus raw file fetches, starting at the files the issue points to and following imports 1–2 levels out (~30–80 files). Cached by commit SHA.
+- **No OAuth for the hackathon.** We use our own GitHub token, and the user posts the comments we draft for them.
+- **Mock mode by default.** `MODE=mock` runs offline with fixtures for GitHub and the LLM. `MODE=live` uses real APIs, and a missing key falls back to mock for that service only.
+
+### Progress model
+
+```
+(User)─KNOWS {level, source}─▶(Tech)
+(User)─WORKING_ON─▶(Attempt {status, started_at, last_activity_at})─FOR─▶(Issue)─IN─▶(Repo)
+(Attempt)─HAS_EVENT─▶(Event {type, gh_id, at, ...})   append-only timeline
+(User)─SKIPPED {reason, at}─▶(Issue)
+(User)─LEARNED {at}─▶(Tech)
+(File)─CONTAINS─▶(Function)─CALLS─▶(Function)─TESTED_BY─▶(Test)   code slice per issue
+```
+
+Attempt status: `selected → in_progress → pr_open → in_review ⇄ changes_requested → merged`, or `closed` / `abandoned`
+
+## Tasks
+
+**Status:** ⬜ todo · 🔨 in progress · ✔️ done · **Owner:** A = data + graph · B = agent + UI
+
+### Phase 0: Foundation
+| # | Task | Journeys | Owner | Status |
+|---|---|---|---|---|
+| T0.1 | Scaffold: `backend/` (FastAPI, uv), `frontend/` (Next.js + TS + Tailwind), `docker-compose.yml` (FalkorDB), `.env.example`, `Makefile` | — | A | ✔️ |
+| T0.2 | Config + mock/live switch; GitHub client with Redis TTL cache and rate-limit handling | G7 | A | ✔️ |
+| T0.3 | Shared contracts: Pydantic models + matching TypeScript types for the API | — | B | ✔️ |
+| T0.4 | Graph schema, indexes, and a progress repository (User, Tech, Attempt, Event, …) | — | A | ✔️ |
+| T0.5 | Test the planned Cypher against FalkorDB (progress queries done; code-slice queries come with T2.2) | — | A | 🔨 |
+
+### Phase 1: Onboard and discover
+| # | Task | Journeys | Owner | Status |
+|---|---|---|---|---|
+| T1.1 | Fingerprint: repos, languages, dependency files → `KNOWS {level}` | A1 | A | ⬜ |
+| T1.2 | Import past merged PRs as completed attempts → starting level | A2 | A | ⬜ |
+| T1.3 | Issue search: a few combined queries per user (search API allows 30/min), plus "in my dependencies" | B1, B3 | A | ⬜ |
+| T1.4 | Check each candidate (claim detection, maintainer reply time, first-timer merges) → rank → why-chips | B1, B5 | B | ⬜ |
+| T1.5 | Skip (`SKIPPED`), and recheck the claim at pick time | B6, C3 | A | ⬜ |
+| T1.6 | UI: landing, skill radar, issue cards, issue detail | A1, B1, B5 | B | ⬜ |
+
+### Phase 2: Attempt and guidance
+| # | Task | Journeys | Owner | Status |
+|---|---|---|---|---|
+| T2.1 | Pick an issue → Attempt + `selected` event | C1 | A | ⬜ |
+| T2.2 | Code slice: Trees API + raw files + tree-sitter + follow imports → Layer 2, cached by SHA | C4 | A | ⬜ |
+| T2.3 | Reading path query + code map UI that lights up step by step | C4 | B | ⬜ |
+| T2.4 | Past PRs that touched the same files | C5 | A | ⬜ |
+| T2.5 | Coach drafts: claim comment, setup commands, PR description, review explainer | C2, C6, E1, E3 | B | ⬜ |
+
+### Phase 3: Progress over time
+| # | Task | Journeys | Owner | Status |
+|---|---|---|---|---|
+| T3.1 | Sync engine: commits, PRs, reviews, merges → events (deduplicated) → status changes | D1, D2, G3 | A | ⬜ |
+| T3.2 | Merged → `LEARNED` + level up → next, harder issue | F1, F2 | A | ⬜ |
+| T3.3 | Gone-quiet nudge (`last_activity_at`) | G1 | A | ⬜ |
+| T3.4 | Dashboard: active attempts, nudges, journey timeline | F3, G1, G3 | B | ⬜ |
+
+### Phase 4: Demo
+| # | Task | Journeys | Owner | Status |
+|---|---|---|---|---|
+| T4.1 | Demo repo we control (live commit → PR → merge → sync), pre-warmed cache | D1, D2, F1 | Both | ⬜ |
+| T4.2 | Pitch slides: growth chart, mentor match, maintainer view, company onboarding | F4, I1, I2, I4 | Both | ⬜ |
+| T4.3 | Stretch: paste your own issue or repo URL | B4 | B | ⬜ |
+| T4.4 | README, architecture diagram, backup video, 3 rehearsals | — | Both | ⬜ |
 
 ## User journey tracker
 
