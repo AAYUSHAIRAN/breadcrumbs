@@ -2,9 +2,14 @@
 
 **Follow the trail from issue to merged PR.**
 
-Enter your GitHub username. Breadcrumbs finds open-source issues you can actually get merged, matched to what you know, in repos that treat newcomers well. Then **Guide**, an AI agent that uses FalkorDB as its context and memory, writes everything you need to land the fix, following that repo's own rules.
+> **An AI agent with graph memory.** Breadcrumbs finds open-source issues you can actually get merged. Then **Guide**, its AI agent, uses FalkorDB as its context and memory to write everything you need to land the fix: a claim comment, the exact setup commands and a PR description, following that repo's own rules. It remembers what it learns, for you and for the next newcomer to that repo.
 
 Built for **Graph Hacks: Context for AI Agents** (FalkorDB). Tracks: **Agents That Act on Connected Data** and **Agent Memory & Coordination**.
+
+**At a glance**
+- 🤖 **Guide agent** (Claude): reads your graph and the repo's rules, writes personalised drafts, shows an agent trace of every step and query → [The Guide agent](#the-guide-agent)
+- 🧠 **Memory in FalkorDB**: notes about you, facts about each repo shared across users, every issue you were shown, saved, skipped and picked
+- 🔎 **Explainable matching**: every recommendation is a graph path you can see, with the Cypher that produced it
 
 ---
 

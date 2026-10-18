@@ -72,9 +72,18 @@ export function HomeView() {
             <span className="font-medium">Next: {nextStep(current, current.issue_id.split("#")[1]).title}.</span>{" "}
             <span className="text-ink-2">{nextStep(current, current.issue_id.split("#")[1]).body}</span>
           </p>
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-info-bg p-4 text-sm">
+            <span>
+              <span className="font-medium">✨ Guide, our AI agent,</span>{" "}
+              <span className="text-ink-2">can write your claim comment, setup commands and PR for this repo, following its own rules.</span>
+            </span>
+            <Link href={`/trail/${issuePath(current.issue_id)}`} className="font-medium text-accent-strong hover:underline">
+              Open Guide →
+            </Link>
+          </div>
         </section>
       ) : (
-        <EmptyState title="No issue in progress" body="Pick an issue that fits you, and we'll guide you from first comment to merged PR." action={{ label: "Discover issues", href: "/discover" }} />
+        <EmptyState title="No issue in progress" body="Pick an issue that fits you, and Guide, our AI agent, will write your claim comment, setup steps and PR." action={{ label: "Discover issues", href: "/discover" }} />
       )}
 
       <section className="flex flex-col gap-3">
