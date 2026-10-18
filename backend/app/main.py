@@ -1,10 +1,11 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
 from app.db import get_redis
+from app.github import reset_stale
 from app.graph.schema import ensure_schema
 from app.routes import users
 
@@ -18,6 +19,12 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="Breadcrumbs API", lifespan=lifespan)
 app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:3000"], allow_methods=["*"], allow_headers=["*"])
 app.include_router(users.router)
+
+
+@app.middleware("http")
+async def stale_flag(request: Request, call_next):
+    reset_stale()
+    return await call_next(request)
 
 
 @app.get("/health")

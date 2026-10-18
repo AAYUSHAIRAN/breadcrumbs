@@ -25,6 +25,8 @@ backend/app/
 ├── cache.py          Redis TTL cache
 ├── contracts.py      API models (mirrored in frontend/src/lib/contracts.ts)
 ├── fingerprint/      A1 skill fingerprint: one GraphQL call → skills + level
+├── discovery/        B1/B3 candidate issues: repo search → batched issue fetch
+├── registry.py       npm/PyPI package → GitHub repo (B3)
 ├── routes/           API endpoints
 └── graph/
     ├── schema.py     indexes
@@ -37,6 +39,7 @@ backend/app/
 - **Live, not pre-loaded.** Issues, repos and PRs come from the GitHub API in real time. Search and API results are cached in Redis (the same FalkorDB instance) with a TTL. They are never written to the graph.
 - **The graph stores progress.** It holds the user's journey (skills, attempts, a timeline of events, what they learned) and our progress with them (issues shown, skipped, selected), plus the code slice for each selected issue.
 - **Progress happens on GitHub, too.** Users push commits and open PRs whenever they like. When they visit, we sync their active attempts from GitHub and append new events, deduplicated by GitHub IDs (commit SHA, PR number, review ID).
+- **Good repos first, then their issues.** Searching issues directly mostly finds tiny personal repos whose owners label their own to-do lists "help wanted". So we search for mid-size, active repos (200–30k stars, pushed in the last 30 days, with labelled issues) in the user's top languages, add the repos behind their dependencies, then fetch those repos' issues in batched GraphQL calls.
 - **No cloning.** Code comes from the Git Trees API plus raw file fetches, starting at the files the issue points to and following imports 1–2 levels out (~30–80 files). Cached by commit SHA.
 - **No OAuth for the hackathon.** We use our own GitHub token, and the user posts the comments we draft for them.
 - **Mock mode by default.** `MODE=mock` runs offline with fixtures for GitHub and the LLM. `MODE=live` uses real APIs, and a missing key falls back to mock for that service only.
@@ -72,7 +75,7 @@ Attempt status: `selected → in_progress → pr_open → in_review ⇄ changes_
 |---|---|---|---|---|
 | T1.1 | Fingerprint: repos, languages, dependency files → `KNOWS {level}` | A1 | A | ✔️ |
 | T1.2 | Import past merged PRs as completed attempts → starting level | A2 | A | ⬜ |
-| T1.3 | Issue search: a few combined queries per user (search API allows 30/min), plus "in my dependencies" | B1, B3 | A | ⬜ |
+| T1.3 | Issue search: repo search per top language (mid-size, active, with labelled issues) + dependency repos, then batched GraphQL for their open issues; drop assigned, PR-linked, stale and seen issues | B1, B3 | A | ✔️ |
 | T1.4 | Check each candidate (claim detection, maintainer reply time, first-timer merges) → rank → why-chips | B1, B5 | B | ⬜ |
 | T1.5 | Skip (`SKIPPED`), and recheck the claim at pick time | B6, C3 | A | ⬜ |
 | T1.6 | UI: landing, skill radar, issue cards, issue detail | A1, B1, B5 | B | ⬜ |
@@ -123,9 +126,9 @@ Attempt status: `selected → in_progress → pr_open → in_review ⇄ changes_
 | A5 | Edit skills by hand | P2 | | |
 | A6 | Set goals (PRs per month, tech to learn) | P2 | | |
 | **B. Discover** |||||
-| B1 | Browse ranked issue cards with why-chips (live + cached) | P0 | ✅ | ⬜ |
+| B1 | Browse ranked issue cards with why-chips (live + cached) | P0 | ✅ | 🔨 |
 | B2 | Filter by language, label, size, repo | P1 | | |
-| B3 | "In my dependencies" 📦 | P1 | ✅ | ⬜ |
+| B3 | "In my dependencies" 📦 | P1 | ✅ | 🔨 |
 | B4 | Paste your own issue or repo URL | P1 | 🟡 | ⬜ |
 | B5 | Inspect issue: why, claim status, maintainer speed, size | P0 | ✅ | ⬜ |
 | B6 | Skip → hidden next time | P1 | ✅ | ⬜ |

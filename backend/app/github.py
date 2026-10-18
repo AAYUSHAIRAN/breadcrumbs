@@ -2,7 +2,7 @@
 
 Use `get_github()`; never construct clients directly. If a live call fails
 (rate limit, outage), we serve the last stale copy and mark the request with
-`served_stale`, so the API can tell the UI that data may be outdated (G7).
+it stale (`is_stale()`), so the API can tell the UI that data may be outdated (G7).
 """
 
 import contextvars
@@ -20,7 +20,30 @@ from app.db import get_redis
 
 FIXTURES = Path(__file__).parent.parent / "fixtures" / "github"
 
-served_stale: contextvars.ContextVar[bool] = contextvars.ContextVar("served_stale", default=False)
+
+
+class _StaleFlag:
+    value = False
+
+
+# A shared object rather than a bool: tasks started with asyncio.gather get a copy
+# of the context, so they can mutate this object but couldn't re-set a bool.
+_stale: contextvars.ContextVar[_StaleFlag] = contextvars.ContextVar("served_stale")
+
+
+def reset_stale() -> None:
+    """Call at the start of each request."""
+    _stale.set(_StaleFlag())
+
+
+def mark_stale() -> None:
+    if (flag := _stale.get(None)) is not None:
+        flag.value = True
+
+
+def is_stale() -> bool:
+    flag = _stale.get(None)
+    return flag is not None and flag.value
 
 
 class GitHubError(Exception):
@@ -71,7 +94,7 @@ class LiveGitHub:
             value = await fetch()
         except (GitHubError, httpx.HTTPError):
             if (stale := await self.cache.get_stale(key)) is not None:
-                served_stale.set(True)
+                mark_stale()
                 return stale
             raise
         await self.cache.set(key, value, ttl)

@@ -1,8 +1,10 @@
+import asyncio
+
 import pytest
 
 from app.cache import Cache
 from app.db import get_redis
-from app.github import GitHubError, LiveGitHub, served_stale
+from app.github import GitHubError, LiveGitHub, is_stale, reset_stale
 
 
 class FailingLive(LiveGitHub):
@@ -29,9 +31,11 @@ async def test_falls_back_to_stale_copy_when_github_fails():
     assert await gh._cached(key, 60, ok) == {"v": 1}
     await redis.delete("cache:" + key)  # fresh copy expired
 
-    served_stale.set(False)
-    assert await gh._cached(key, 60, boom) == {"v": 1}
-    assert served_stale.get() is True
+    reset_stale()
+    # Run inside a child task, as parallel searches do: the flag must still reach us.
+    (result,) = await asyncio.gather(gh._cached(key, 60, boom))
+    assert result == {"v": 1}
+    assert is_stale()
 
 
 async def test_no_stale_copy_raises():
