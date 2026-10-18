@@ -42,7 +42,7 @@ export interface Fingerprint {
   level: Level;
   skills: Skill[];
   merged_prs: number;
-  dependencies: string[];
+  dependencies: string[]; // packages from dependency files, e.g. "npm:react", "pypi:fastapi"
 }
 
 // --- Discovery ---------------------------------------------------------------

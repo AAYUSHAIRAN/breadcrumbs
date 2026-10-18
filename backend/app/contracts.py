@@ -53,7 +53,7 @@ class Fingerprint(BaseModel):
     level: Level
     skills: list[Skill]
     merged_prs: int = 0
-    dependencies: list[str] = []  # "owner/repo" of libraries the user depends on
+    dependencies: list[str] = []  # packages from dependency files, e.g. "npm:react", "pypi:fastapi"
 
 
 # --- Discovery ---------------------------------------------------------------

@@ -84,7 +84,7 @@ async def get_user(login: str) -> Fingerprint | None:
         level=user["level"],
         merged_prs=user.get("merged_prs", 0),
         dependencies=user.get("dependencies", []),
-        skills=[Skill(**s) for s in skills if s["tech"] is not None],
+        skills=sorted((Skill(**s) for s in skills if s["tech"] is not None), key=lambda s: s.level, reverse=True),
     )
 
 

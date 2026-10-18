@@ -24,6 +24,8 @@ backend/app/
 ├── github.py         live client (TTL cache + stale fallback) or fixtures
 ├── cache.py          Redis TTL cache
 ├── contracts.py      API models (mirrored in frontend/src/lib/contracts.ts)
+├── fingerprint/      A1 skill fingerprint: one GraphQL call → skills + level
+├── routes/           API endpoints
 └── graph/
     ├── schema.py     indexes
     ├── progress.py   users, skills, attempts, events, skips
@@ -68,7 +70,7 @@ Attempt status: `selected → in_progress → pr_open → in_review ⇄ changes_
 ### Phase 1: Onboard and discover
 | # | Task | Journeys | Owner | Status |
 |---|---|---|---|---|
-| T1.1 | Fingerprint: repos, languages, dependency files → `KNOWS {level}` | A1 | A | ⬜ |
+| T1.1 | Fingerprint: repos, languages, dependency files → `KNOWS {level}` | A1 | A | ✔️ |
 | T1.2 | Import past merged PRs as completed attempts → starting level | A2 | A | ⬜ |
 | T1.3 | Issue search: a few combined queries per user (search API allows 30/min), plus "in my dependencies" | B1, B3 | A | ⬜ |
 | T1.4 | Check each candidate (claim detection, maintainer reply time, first-timer merges) → rank → why-chips | B1, B5 | B | ⬜ |

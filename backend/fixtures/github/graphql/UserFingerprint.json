@@ -1,0 +1,550 @@
+{
+ "user": {
+  "login": "AAYUSHAIRAN",
+  "name": "AAYUSH AIRAN",
+  "avatarUrl": "https://avatars.githubusercontent.com/u/63530479?u=13a9e23f041996218249b85408515aa5bd2b0bc2&v=4",
+  "repositories": {
+   "nodes": [
+    {
+     "nameWithOwner": "AAYUSHAIRAN/breadcrumbs",
+     "pushedAt": "2026-10-18T08:49:58Z",
+     "languages": {
+      "edges": [
+       {
+        "size": 30346,
+        "node": {
+         "name": "Python"
+        }
+       },
+       {
+        "size": 7627,
+        "node": {
+         "name": "TypeScript"
+        }
+       },
+       {
+        "size": 488,
+        "node": {
+         "name": "CSS"
+        }
+       },
+       {
+        "size": 465,
+        "node": {
+         "name": "JavaScript"
+        }
+       },
+       {
+        "size": 448,
+        "node": {
+         "name": "Makefile"
+        }
+       }
+      ]
+     },
+     "packageJson": null,
+     "requirements": null,
+     "pyproject": null
+    },
+    {
+     "nameWithOwner": "AAYUSHAIRAN/FDSE-Assignment-Submission-",
+     "pushedAt": "2026-05-18T00:18:08Z",
+     "languages": {
+      "edges": []
+     },
+     "packageJson": null,
+     "requirements": null,
+     "pyproject": null
+    },
+    {
+     "nameWithOwner": "AAYUSHAIRAN/react-sketch-4.0",
+     "pushedAt": "2023-06-26T14:21:13Z",
+     "languages": {
+      "edges": []
+     },
+     "packageJson": null,
+     "requirements": null,
+     "pyproject": null
+    },
+    {
+     "nameWithOwner": "AAYUSHAIRAN/LeetCode",
+     "pushedAt": "2021-12-25T15:02:30Z",
+     "languages": {
+      "edges": [
+       {
+        "size": 6766,
+        "node": {
+         "name": "C++"
+        }
+       }
+      ]
+     },
+     "packageJson": null,
+     "requirements": null,
+     "pyproject": null
+    },
+    {
+     "nameWithOwner": "AAYUSHAIRAN/random_c",
+     "pushedAt": "2021-12-11T18:50:59Z",
+     "languages": {
+      "edges": []
+     },
+     "packageJson": null,
+     "requirements": null,
+     "pyproject": null
+    },
+    {
+     "nameWithOwner": "AAYUSHAIRAN/Random",
+     "pushedAt": "2021-12-07T07:14:01Z",
+     "languages": {
+      "edges": []
+     },
+     "packageJson": null,
+     "requirements": null,
+     "pyproject": null
+    },
+    {
+     "nameWithOwner": "AAYUSHAIRAN/BlogAppDRF",
+     "pushedAt": "2021-11-09T14:58:08Z",
+     "languages": {
+      "edges": [
+       {
+        "size": 13252,
+        "node": {
+         "name": "Python"
+        }
+       }
+      ]
+     },
+     "packageJson": null,
+     "requirements": null,
+     "pyproject": null
+    },
+    {
+     "nameWithOwner": "AAYUSHAIRAN/my_app",
+     "pushedAt": "2021-10-06T13:49:21Z",
+     "languages": {
+      "edges": [
+       {
+        "size": 1877,
+        "node": {
+         "name": "JavaScript"
+        }
+       },
+       {
+        "size": 1721,
+        "node": {
+         "name": "HTML"
+        }
+       },
+       {
+        "size": 930,
+        "node": {
+         "name": "CSS"
+        }
+       }
+      ]
+     },
+     "packageJson": {
+      "text": "{\n  \"name\": \"my_app\",\n  \"version\": \"0.1.0\",\n  \"private\": true,\n  \"dependencies\": {\n    \"@testing-library/jest-dom\": \"^5.11.4\",\n    \"@testing-library/react\": \"^11.1.0\",\n    \"@testing-library/user-event\": \"^12.1.10\",\n    \"react\": \"^17.0.2\",\n    \"react-dom\": \"^17.0.2\",\n    \"react-scripts\": \"4.0.3\",\n    \"web-vitals\": \"^1.0.1\"\n  },\n  \"scripts\": {\n    \"start\": \"react-scripts start\",\n    \"build\": \"react-scripts build\",\n    \"test\": \"react-scripts test\",\n    \"eject\": \"react-scripts eject\"\n  },\n  \"eslintConfig\": {\n    \"extends\": [\n      \"react-app\",\n      \"react-app/jest\"\n    ]\n  },\n  \"browserslist\": {\n    \"production\": [\n      \">0.2%\",\n      \"not dead\",\n      \"not op_mini all\"\n    ],\n    \"development\": [\n      \"last 1 chrome version\",\n      \"last 1 firefox version\",\n      \"last 1 safari version\"\n    ]\n  }\n}\n"
+     },
+     "requirements": null,
+     "pyproject": null
+    },
+    {
+     "nameWithOwner": "AAYUSHAIRAN/SpringFest",
+     "pushedAt": "2020-09-03T16:54:20Z",
+     "languages": {
+      "edges": [
+       {
+        "size": 79817,
+        "node": {
+         "name": "JavaScript"
+        }
+       },
+       {
+        "size": 17398,
+        "node": {
+         "name": "CSS"
+        }
+       },
+       {
+        "size": 17007,
+        "node": {
+         "name": "PHP"
+        }
+       },
+       {
+        "size": 8590,
+        "node": {
+         "name": "HTML"
+        }
+       }
+      ]
+     },
+     "packageJson": null,
+     "requirements": null,
+     "pyproject": null
+    },
+    {
+     "nameWithOwner": "AAYUSHAIRAN/springfest_aayushairan123",
+     "pushedAt": "2020-09-03T16:23:50Z",
+     "languages": {
+      "edges": [
+       {
+        "size": 3651,
+        "node": {
+         "name": "HTML"
+        }
+       },
+       {
+        "size": 3028,
+        "node": {
+         "name": "CSS"
+        }
+       }
+      ]
+     },
+     "packageJson": null,
+     "requirements": null,
+     "pyproject": null
+    },
+    {
+     "nameWithOwner": "AAYUSHAIRAN/Final_SpringFest",
+     "pushedAt": "2020-09-03T16:12:45Z",
+     "languages": {
+      "edges": []
+     },
+     "packageJson": null,
+     "requirements": null,
+     "pyproject": null
+    },
+    {
+     "nameWithOwner": "AAYUSHAIRAN/programming",
+     "pushedAt": "2020-08-28T07:32:27Z",
+     "languages": {
+      "edges": []
+     },
+     "packageJson": null,
+     "requirements": null,
+     "pyproject": null
+    },
+    {
+     "nameWithOwner": "AAYUSHAIRAN/movie_kedda",
+     "pushedAt": "2020-08-28T07:27:00Z",
+     "languages": {
+      "edges": [
+       {
+        "size": 1337,
+        "node": {
+         "name": "HTML"
+        }
+       },
+       {
+        "size": 819,
+        "node": {
+         "name": "CSS"
+        }
+       },
+       {
+        "size": 803,
+        "node": {
+         "name": "JavaScript"
+        }
+       }
+      ]
+     },
+     "packageJson": null,
+     "requirements": null,
+     "pyproject": null
+    },
+    {
+     "nameWithOwner": "AAYUSHAIRAN/movie_keeda",
+     "pushedAt": "2020-08-28T07:20:19Z",
+     "languages": {
+      "edges": []
+     },
+     "packageJson": null,
+     "requirements": null,
+     "pyproject": null
+    },
+    {
+     "nameWithOwner": "AAYUSHAIRAN/quora_lite",
+     "pushedAt": "2020-07-25T04:38:00Z",
+     "languages": {
+      "edges": [
+       {
+        "size": 17007,
+        "node": {
+         "name": "PHP"
+        }
+       },
+       {
+        "size": 11568,
+        "node": {
+         "name": "JavaScript"
+        }
+       },
+       {
+        "size": 6236,
+        "node": {
+         "name": "CSS"
+        }
+       }
+      ]
+     },
+     "packageJson": null,
+     "requirements": null,
+     "pyproject": null
+    },
+    {
+     "nameWithOwner": "AAYUSHAIRAN/LUDO-LITE",
+     "pushedAt": "2020-06-10T15:29:15Z",
+     "languages": {
+      "edges": [
+       {
+        "size": 68249,
+        "node": {
+         "name": "JavaScript"
+        }
+       },
+       {
+        "size": 834,
+        "node": {
+         "name": "CSS"
+        }
+       },
+       {
+        "size": 773,
+        "node": {
+         "name": "HTML"
+        }
+       }
+      ]
+     },
+     "packageJson": null,
+     "requirements": null,
+     "pyproject": null
+    },
+    {
+     "nameWithOwner": "AAYUSHAIRAN/replicawebsite-aairan",
+     "pushedAt": "2020-05-01T10:02:24Z",
+     "languages": {
+      "edges": [
+       {
+        "size": 7300,
+        "node": {
+         "name": "CSS"
+        }
+       },
+       {
+        "size": 4166,
+        "node": {
+         "name": "HTML"
+        }
+       }
+      ]
+     },
+     "packageJson": null,
+     "requirements": null,
+     "pyproject": null
+    },
+    {
+     "nameWithOwner": "AAYUSHAIRAN/aspring_fest-ayush",
+     "pushedAt": "2020-04-21T10:29:33Z",
+     "languages": {
+      "edges": []
+     },
+     "packageJson": null,
+     "requirements": null,
+     "pyproject": null
+    },
+    {
+     "nameWithOwner": "AAYUSHAIRAN/portfolio_website-aayushairan-",
+     "pushedAt": "2020-04-21T10:08:12Z",
+     "languages": {
+      "edges": []
+     },
+     "packageJson": null,
+     "requirements": null,
+     "pyproject": null
+    },
+    {
+     "nameWithOwner": "AAYUSHAIRAN/AAYUSHAIRAN.github.io",
+     "pushedAt": "2020-04-13T05:16:22Z",
+     "languages": {
+      "edges": [
+       {
+        "size": 43,
+        "node": {
+         "name": "HTML"
+        }
+       }
+      ]
+     },
+     "packageJson": null,
+     "requirements": null,
+     "pyproject": null
+    }
+   ]
+  }
+ },
+ "merged": {
+  "issueCount": 17,
+  "nodes": [
+   {
+    "mergedAt": "2022-03-12T17:21:06Z",
+    "repository": {
+     "nameWithOwner": "Inter-IIT-Tech-Meet-10-0/front-end",
+     "primaryLanguage": {
+      "name": "JavaScript"
+     }
+    }
+   },
+   {
+    "mergedAt": "2022-03-08T19:34:22Z",
+    "repository": {
+     "nameWithOwner": "Inter-IIT-Tech-Meet-10-0/front-end",
+     "primaryLanguage": {
+      "name": "JavaScript"
+     }
+    }
+   },
+   {
+    "mergedAt": "2022-02-18T19:26:45Z",
+    "repository": {
+     "nameWithOwner": "Inter-IIT-Tech-Meet-10-0/front-end",
+     "primaryLanguage": {
+      "name": "JavaScript"
+     }
+    }
+   },
+   {
+    "mergedAt": "2022-02-18T17:54:36Z",
+    "repository": {
+     "nameWithOwner": "Inter-IIT-Tech-Meet-10-0/front-end",
+     "primaryLanguage": {
+      "name": "JavaScript"
+     }
+    }
+   },
+   {
+    "mergedAt": "2022-02-18T13:29:09Z",
+    "repository": {
+     "nameWithOwner": "Inter-IIT-Tech-Meet-10-0/front-end",
+     "primaryLanguage": {
+      "name": "JavaScript"
+     }
+    }
+   },
+   {
+    "mergedAt": "2022-02-18T12:54:20Z",
+    "repository": {
+     "nameWithOwner": "Inter-IIT-Tech-Meet-10-0/front-end",
+     "primaryLanguage": {
+      "name": "JavaScript"
+     }
+    }
+   },
+   {
+    "mergedAt": "2022-02-18T11:52:28Z",
+    "repository": {
+     "nameWithOwner": "Inter-IIT-Tech-Meet-10-0/front-end",
+     "primaryLanguage": {
+      "name": "JavaScript"
+     }
+    }
+   },
+   {
+    "mergedAt": "2022-02-17T14:14:08Z",
+    "repository": {
+     "nameWithOwner": "Inter-IIT-Tech-Meet-10-0/front-end",
+     "primaryLanguage": {
+      "name": "JavaScript"
+     }
+    }
+   },
+   {
+    "mergedAt": "2022-02-18T17:54:37Z",
+    "repository": {
+     "nameWithOwner": "Inter-IIT-Tech-Meet-10-0/front-end",
+     "primaryLanguage": {
+      "name": "JavaScript"
+     }
+    }
+   },
+   {
+    "mergedAt": "2022-02-18T17:54:37Z",
+    "repository": {
+     "nameWithOwner": "Inter-IIT-Tech-Meet-10-0/front-end",
+     "primaryLanguage": {
+      "name": "JavaScript"
+     }
+    }
+   },
+   {
+    "mergedAt": "2022-02-15T14:17:07Z",
+    "repository": {
+     "nameWithOwner": "Inter-IIT-Tech-Meet-10-0/front-end",
+     "primaryLanguage": {
+      "name": "JavaScript"
+     }
+    }
+   },
+   {
+    "mergedAt": "2022-02-13T16:08:59Z",
+    "repository": {
+     "nameWithOwner": "Inter-IIT-Tech-Meet-10-0/front-end",
+     "primaryLanguage": {
+      "name": "JavaScript"
+     }
+    }
+   },
+   {
+    "mergedAt": "2021-12-21T14:08:29Z",
+    "repository": {
+     "nameWithOwner": "Inter-IIT-Tech-Meet-10-0/front-end",
+     "primaryLanguage": {
+      "name": "JavaScript"
+     }
+    }
+   },
+   {
+    "mergedAt": "2021-12-21T14:40:56Z",
+    "repository": {
+     "nameWithOwner": "Inter-IIT-Tech-Meet-10-0/front-end",
+     "primaryLanguage": {
+      "name": "JavaScript"
+     }
+    }
+   },
+   {
+    "mergedAt": "2021-12-20T09:45:10Z",
+    "repository": {
+     "nameWithOwner": "Inter-IIT-Tech-Meet-10-0/front-end",
+     "primaryLanguage": {
+      "name": "JavaScript"
+     }
+    }
+   },
+   {
+    "mergedAt": "2021-12-21T14:30:02Z",
+    "repository": {
+     "nameWithOwner": "Inter-IIT-Tech-Meet-10-0/front-end",
+     "primaryLanguage": {
+      "name": "JavaScript"
+     }
+    }
+   },
+   {
+    "mergedAt": "2021-12-12T08:47:56Z",
+    "repository": {
+     "nameWithOwner": "Inter-IIT-Tech-Meet-10-0/front-end",
+     "primaryLanguage": {
+      "name": "JavaScript"
+     }
+    }
+   }
+  ]
+ }
+}

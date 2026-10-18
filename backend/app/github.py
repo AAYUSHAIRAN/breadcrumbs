@@ -104,7 +104,7 @@ class LiveGitHub:
                 raise GitHubError(f"GraphQL: {body['errors'][0].get('message')}")
             return body["data"]
 
-        key = _key("graphql", _operation_name(query), variables)
+        key = _key("graphql", _operation_name(query), query, variables)
         return await self._cached(key, ttl or self.default_ttl, fetch)
 
     async def raw_file(self, owner: str, repo: str, ref: str, path: str) -> str:
