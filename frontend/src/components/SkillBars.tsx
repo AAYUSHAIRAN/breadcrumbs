@@ -10,7 +10,9 @@ export function SkillBars({ skills }: { skills: Skill[] }) {
   }
   return (
     <table className="w-full border-separate border-spacing-y-1.5 text-sm">
-      <caption className="sr-only">Skill levels, 0 to 100</caption>
+      <caption className={skills.length > SHOWN ? "mb-1 text-left text-xs text-muted" : "sr-only"}>
+        {skills.length > SHOWN ? `Your top ${SHOWN} of ${skills.length} skills, 0 to 100` : "Skill levels, 0 to 100"}
+      </caption>
       <tbody>
         {top.map((s) => {
           const pct = Math.round(s.level * 100);

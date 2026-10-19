@@ -322,3 +322,22 @@ async def list_attempts(login: str) -> list[Attempt]:
         {"login": login},
     )
     return sorted((_to_attempt(r) for r in rows), key=lambda a: a.last_activity_at, reverse=True)
+
+
+async def remove_attempt(login: str, issue_id: str) -> bool:
+    """Take an issue off the user's trail: delete the attempt and its timeline.
+
+    The Issue node stays (other users may share it), so it can be recommended again.
+    """
+    rows = await _rows(
+        """
+        MATCH (:User {login: $login})-[:WORKING_ON]->(a:Attempt {id: $aid})
+        OPTIONAL MATCH (a)-[:HAS_EVENT]->(e:Event)
+        WITH a, collect(e) AS events
+        FOREACH (e IN events | DETACH DELETE e)
+        DETACH DELETE a
+        RETURN count(a)
+        """,
+        {"login": login, "aid": attempt_id(login, issue_id)},
+    )
+    return bool(rows and rows[0][0])

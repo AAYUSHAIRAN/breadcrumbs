@@ -9,8 +9,8 @@ from app.discovery.search import find_candidates
 from app.github import GitHub
 from app.registry import Registry
 
-CHECK_TOP = 25  # check only the most promising candidates: each check costs API calls
-SHOW = 20
+CHECK_TOP = 40  # check only the most promising candidates: each check costs API calls
+SHOW = 40  # the full ranked list; the API pages through it
 
 
 async def find_matches(

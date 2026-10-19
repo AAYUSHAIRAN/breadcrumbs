@@ -64,6 +64,8 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ issue_id: issueId, force }),
     }),
+  removeAttempt: (login: string, issueId: string) =>
+    request<void>(`${user(login)}/attempts/${issuePath(issueId)}`, { method: "DELETE" }),
   trailGraph: (login: string) => request<GraphView>(`${user(login)}/graph`),
   guide: (login: string, issueId: string) => request<Guide | Record<string, never>>(`${user(login)}/attempts/${issuePath(issueId)}/guide`),
   writeGuide: (login: string, issueId: string) =>

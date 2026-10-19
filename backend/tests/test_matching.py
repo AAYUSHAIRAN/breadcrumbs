@@ -218,3 +218,28 @@ async def test_matches_endpoint_ranks_and_remembers_what_it_showed(graph, monkey
 
     rows = (await graph.query("MATCH (:User {login: 'AAYUSHAIRAN'})-[s:SHOWN]->(i:Issue) RETURN count(i)")).result_set
     assert rows[0][0] == len(issues)
+
+
+def test_technology_the_user_chose_counts_as_a_medium_skill():
+    chose_rust = FP.model_copy(update={"preferences": Preferences(languages=["rust"])})
+    card = score(candidate(matched="rust"), chose_rust, GOOD_REPO, FREE, NOW)
+    assert card.breakdown["skill"] == 0.5
+    assert score(candidate(matched="rust"), FP, GOOD_REPO, FREE, NOW).breakdown["skill"] == 0
+
+
+async def test_matches_pages_through_the_ranked_list(graph, monkeypatch):
+    import app.discovery.matches as matches_module
+
+    monkeypatch.setattr(search, "datetime", _FrozenDatetime)
+    monkeypatch.setattr(matches_module, "datetime", _FrozenDatetime)
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        everything = (await client.get("/users/AAYUSHAIRAN/matches")).json()
+        first = (await client.get("/users/AAYUSHAIRAN/matches?page=1&page_size=3")).json()
+        second = (await client.get("/users/AAYUSHAIRAN/matches?page=2&page_size=3")).json()
+        past_end = (await client.get("/users/AAYUSHAIRAN/matches?page=99&page_size=3")).json()
+    assert everything["page_size"] == 0 and len(everything["issues"]) == everything["total"]
+    ids = [i["id"] for i in everything["issues"]]
+    assert [i["id"] for i in first["issues"]] == ids[:3]
+    assert [i["id"] for i in second["issues"]] == ids[3:6]
+    assert first["total"] == everything["total"] and first["page_size"] == 3
+    assert past_end["issues"] == []

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { preload, useSWRConfig } from "swr";
 
@@ -11,6 +11,13 @@ import { setLogin, useLogin } from "@/lib/session";
 import { PreferencesForm } from "../PreferencesForm";
 import { SkillBars } from "../SkillBars";
 import { CheckIcon } from "../ui/Icons";
+
+// One-click profiles for people who don't want to use their own GitHub (or don't have one handy).
+export const SAMPLES = [
+  { login: "tiangolo", label: "creator of FastAPI · Python" },
+  { login: "gaearon", label: "React core · JavaScript" },
+  { login: "AAYUSHAIRAN", label: "one of us" },
+];
 
 const READING = ["Your public repositories", "Languages and dependency files", "Pull requests merged into other projects", "Your level"];
 const MIN_READING_MS = 2400; // long enough to see the steps; real work usually takes about as long
@@ -78,7 +85,9 @@ export function Onboarding() {
   const router = useRouter();
   const remembered = useLogin();
   const { mutate } = useSWRConfig();
-  const [step, setStep] = useState<Step>({ name: "enter" });
+  const sample = useSearchParams().get("u");
+  // ?u=<login> (the landing page's sample links) skips straight to reading GitHub.
+  const [step, setStep] = useState<Step>(sample ? { name: "reading", login: sample } : { name: "enter" });
   const [input, setInput] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -121,6 +130,25 @@ export function Onboarding() {
             </button>
           </div>
           {error && <p role="alert" className="text-sm text-warn">⚠ {error}</p>}
+          <div className="flex flex-col gap-2 rounded-xl border border-border bg-surface p-4">
+            <p className="text-sm text-ink-2">No GitHub handy? Try a sample profile:</p>
+            <div className="flex flex-wrap gap-2">
+              {SAMPLES.map((s) => (
+                <button
+                  key={s.login}
+                  type="button"
+                  onClick={() => {
+                    setError(null);
+                    setStep({ name: "reading", login: s.login });
+                  }}
+                  className="flex flex-col items-start rounded-lg border border-border px-3 py-2 text-left hover:border-accent hover:bg-info-bg"
+                >
+                  <span className="font-mono text-sm font-medium">@{s.login}</span>
+                  <span className="text-xs text-ink-2">{s.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
           {remembered && (
             <p className="text-sm text-ink-2">
               Or{" "}

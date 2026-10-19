@@ -90,7 +90,10 @@ export interface IssueCard {
 
 export interface Matches {
   login: string;
-  issues: IssueCard[];
+  issues: IssueCard[]; // this page, or everything when not paged (page_size 0)
+  total: number;
+  page: number;
+  page_size: number;
   stale: boolean;
 }
 

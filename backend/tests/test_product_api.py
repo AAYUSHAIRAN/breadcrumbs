@@ -81,3 +81,17 @@ async def test_attempt_lookup_and_trail_graph(graph):
     ids = {n["id"] for n in trail["nodes"]}
     assert {"user", "tech:javascript", f"issue:{ISSUE}", "repo:CesiumGS/cesium"} <= ids
     assert {"source": "user", "target": f"issue:{ISSUE}", "label": "selected"} in trail["edges"]
+
+
+async def test_remove_from_trail_deletes_attempt_and_lets_issue_come_back(graph):
+    await make_user()
+    async with client() as c:
+        await c.post("/users/maya/attempts", json={"issue_id": ISSUE})
+        assert ISSUE in await progress.seen_issue_ids("maya")
+        assert (await c.delete(f"/users/maya/attempts/{ISSUE_PATH}")).status_code == 204
+        assert (await c.get(f"/users/maya/attempts/{ISSUE_PATH}")).status_code == 404
+        assert (await c.get("/users/maya/attempts")).json() == []
+        assert (await c.delete(f"/users/maya/attempts/{ISSUE_PATH}")).status_code == 404
+    assert ISSUE not in await progress.seen_issue_ids("maya")
+    events = (await graph.query("MATCH (e:Event) RETURN count(e)")).result_set[0][0]
+    assert events == 0

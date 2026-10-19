@@ -66,7 +66,10 @@ export function ProfileView() {
 
       <section className="flex flex-col gap-2">
         <h2 className="font-medium">Your trail, as a graph</h2>
-        <p className="text-sm text-ink-2">Your strongest skills, the issues you&apos;ve picked, their repos, and what you&apos;ve learned. It grows with every attempt.</p>
+        <p className="text-sm text-ink-2">
+          Your top 6 skills, the issues you&apos;ve picked, their repos, and what you&apos;ve learned. It grows with every attempt
+          {user && user.skills.length > 6 ? ` (all ${user.skills.length} skills are in the graph; we draw the strongest 6)` : ""}.
+        </p>
         {graph.data ? <GraphView view={graph.data} levels={TRAIL_LEVELS} title="Your trail graph" /> : <Skeleton className="h-56" />}
       </section>
 

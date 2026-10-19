@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { ApiError } from "@/lib/api";
@@ -12,6 +12,7 @@ import { nextStep, STATUS_LABEL } from "../attempts/progress";
 import { GuidePanel } from "../attempts/GuidePanel";
 import { Stepper } from "../attempts/Stepper";
 import { Timeline } from "../attempts/Timeline";
+import { useRemoveAttempt } from "../attempts/useRemoveAttempt";
 import { ArrowLeftIcon, ExternalIcon } from "../ui/Icons";
 import { EmptyState, ErrorNote, Skeleton } from "../ui/States";
 import { useToast } from "../ui/Toast";
@@ -19,7 +20,15 @@ import { useToast } from "../ui/Toast";
 const TABS = ["Guide", "Code map", "Past PRs", "Timeline"] as const;
 type Tab = (typeof TABS)[number];
 
-function CopyBlock({ label, text, mono }: { label: string; text: string; mono?: boolean }) {
+function CopyBlock({
+  label,
+  text,
+  mono,
+}: {
+  label: string;
+  text: string;
+  mono?: boolean;
+}) {
   const toast = useToast();
   return (
     <div className="flex flex-col gap-2">
@@ -35,7 +44,11 @@ function CopyBlock({ label, text, mono }: { label: string; text: string; mono?: 
           Copy
         </button>
       </div>
-      <pre className={`whitespace-pre-wrap rounded-lg bg-page p-3 text-sm ${mono ? "font-mono text-[13px]" : "font-sans"}`}>{text}</pre>
+      <pre
+        className={`whitespace-pre-wrap rounded-lg bg-page p-3 text-sm ${mono ? "font-mono text-[13px]" : "font-sans"}`}
+      >
+        {text}
+      </pre>
     </div>
   );
 }
@@ -43,7 +56,9 @@ function CopyBlock({ label, text, mono }: { label: string; text: string; mono?: 
 function ComingNext({ title, body }: { title: string; body: string }) {
   return (
     <div className="flex flex-col gap-2 rounded-xl border border-dashed border-border p-8">
-      <span className="self-start rounded-full bg-info-bg px-2 py-0.5 text-xs">Coming next</span>
+      <span className="self-start rounded-full bg-info-bg px-2 py-0.5 text-xs">
+        Coming next
+      </span>
       <p className="font-medium">{title}</p>
       <p className="max-w-xl text-sm text-ink-2">{body}</p>
     </div>
@@ -52,14 +67,23 @@ function ComingNext({ title, body }: { title: string; body: string }) {
 
 export function WorkspaceView() {
   const login = useLogin() ?? ""; // "" until known: hooks wait, nothing fetches
-  const { owner, repo, number } = useParams<{ owner: string; repo: string; number: string }>();
+  const { owner, repo, number } = useParams<{
+    owner: string;
+    repo: string;
+    number: string;
+  }>();
   const issueId = `${owner}/${repo}#${number}`;
   const attempt = useAttempt(login, issueId);
   const issue = useIssue(login, issueId);
   const [tab, setTab] = useState<Tab>("Guide");
+  const router = useRouter();
+  const remove = useRemoveAttempt(login);
 
   const back = (
-    <Link href="/trail" className="flex items-center gap-1 text-sm text-ink-2 hover:text-ink">
+    <Link
+      href="/trail"
+      className="flex items-center gap-1 text-sm text-ink-2 hover:text-ink"
+    >
       <ArrowLeftIcon className="h-4 w-4" /> My trail
     </Link>
   );
@@ -69,7 +93,14 @@ export function WorkspaceView() {
       <>
         {back}
         {attempt.error instanceof ApiError && attempt.error.status === 404 ? (
-          <EmptyState title="You haven't picked this issue" body={`${issueId} isn't on your trail yet.`} action={{ label: "Look at it", href: `/issues/${owner}/${repo}/${number}` }} />
+          <EmptyState
+            title="You haven't picked this issue"
+            body={`${issueId} isn't on your trail yet.`}
+            action={{
+              label: "Look at it",
+              href: `/issues/${owner}/${repo}/${number}`,
+            }}
+          />
         ) : (
           <ErrorNote message="Couldn't load this attempt." />
         )}
@@ -102,17 +133,39 @@ export function WorkspaceView() {
           <span aria-hidden>·</span>
           <span>#{number}</span>
           <span aria-hidden>·</span>
-          <span className="rounded-full bg-info-bg px-2 py-0.5 text-xs text-ink">{STATUS_LABEL[a.status]}</span>
-          <a href={a.issue_url} target="_blank" rel="noreferrer" className="ml-auto flex items-center gap-1 hover:text-ink">
+          <span className="rounded-full bg-info-bg px-2 py-0.5 text-xs text-ink">
+            {STATUS_LABEL[a.status]}
+          </span>
+          <a
+            href={a.issue_url}
+            target="_blank"
+            rel="noreferrer"
+            className="ml-auto flex items-center gap-1 hover:text-ink"
+          >
             Issue on GitHub <ExternalIcon className="h-4 w-4" />
           </a>
           {a.pr_url && (
-            <a href={a.pr_url} target="_blank" rel="noreferrer" className="flex items-center gap-1 hover:text-ink">
+            <a
+              href={a.pr_url}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1 hover:text-ink"
+            >
               Your PR <ExternalIcon className="h-4 w-4" />
             </a>
           )}
+          <button
+            onClick={async () => {
+              if (await remove(a)) router.push("/trail");
+            }}
+            className="hover:text-warn"
+          >
+            Remove from trail
+          </button>
         </div>
-        <h1 className="text-2xl font-semibold tracking-tight">{a.issue_title}</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          {a.issue_title}
+        </h1>
       </header>
 
       <section className="rounded-xl border border-border bg-surface p-6">
@@ -120,16 +173,22 @@ export function WorkspaceView() {
       </section>
 
       <section className="flex flex-col gap-1 rounded-xl border border-accent bg-info-bg p-5">
-        <span className="text-xs font-medium uppercase tracking-wide text-accent-strong">Next step</span>
+        <span className="text-xs font-medium uppercase tracking-wide text-accent-strong">
+          Next step
+        </span>
         <p className="text-lg font-medium">{next.title}</p>
         <p className="text-sm text-ink-2">{next.body}</p>
         {a.status === "merged" && (
-          <Link href="/discover" className="mt-2 self-start rounded-lg bg-accent-strong px-4 py-2 text-sm font-medium text-white">
+          <Link
+            href="/discover"
+            className="mt-2 self-start rounded-lg bg-accent-strong px-4 py-2 text-sm font-medium text-white"
+          >
             Find a harder one →
           </Link>
         )}
         <p className="mt-2 text-xs text-muted">
-          Progress here will update from your commits and PRs on GitHub automatically (coming next).
+          Progress here will update from your commits and PRs on GitHub
+          automatically (coming next).
         </p>
       </section>
 
@@ -143,7 +202,11 @@ export function WorkspaceView() {
             className={`-mb-px border-b-2 px-4 py-2 text-sm ${tab === t ? "border-accent font-medium" : "border-transparent text-ink-2 hover:text-ink"}`}
           >
             {t}
-            {t === "Timeline" && <span className="ml-1.5 text-xs text-muted">{a.events.length}</span>}
+            {t === "Timeline" && (
+              <span className="ml-1.5 text-xs text-muted">
+                {a.events.length}
+              </span>
+            )}
           </button>
         ))}
       </div>
@@ -154,33 +217,45 @@ export function WorkspaceView() {
             login={login}
             issueId={issueId}
             fallback={
-          <ol className="grid gap-6 lg:grid-cols-3">
-            <li className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-5">
-              <p className="font-medium">1. Claim it</p>
-              <CopyBlock label="Comment on the issue" text={claim} />
-              <a href={a.issue_url} target="_blank" rel="noreferrer" className="text-sm text-accent-strong hover:underline">
-                Open the issue to comment →
-              </a>
-            </li>
-            <li className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-5">
-              <p className="font-medium">2. Set up</p>
-              <CopyBlock label="Fork, clone and branch" text={setup} mono />
-              <a href={`https://github.com/${slug}/blob/HEAD/CONTRIBUTING.md`} target="_blank" rel="noreferrer" className="text-sm text-accent-strong hover:underline">
-                Read CONTRIBUTING.md, if it has one →
-              </a>
-            </li>
-            <li className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-5">
-              <p className="font-medium">3. Open the PR</p>
-              <CopyBlock label="PR description" text={prHint} />
-              {issue.data && (
-                <p className="text-xs text-ink-2">
-                  Maintainers here usually reply within {hours(issue.data.repo.reply_hours)}; {issue.data.repo.newcomer_merges_90d} newcomer PRs merged
-                  in the last 90 days.
-                </p>
-              )}
-            </li>
-          </ol>
-                    }
+              <ol className="grid gap-6 lg:grid-cols-3">
+                <li className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-5">
+                  <p className="font-medium">1. Claim it</p>
+                  <CopyBlock label="Comment on the issue" text={claim} />
+                  <a
+                    href={a.issue_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-sm text-accent-strong hover:underline"
+                  >
+                    Open the issue to comment →
+                  </a>
+                </li>
+                <li className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-5">
+                  <p className="font-medium">2. Set up</p>
+                  <CopyBlock label="Fork, clone and branch" text={setup} mono />
+                  <a
+                    href={`https://github.com/${slug}/blob/HEAD/CONTRIBUTING.md`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-sm text-accent-strong hover:underline"
+                  >
+                    Read CONTRIBUTING.md, if it has one →
+                  </a>
+                </li>
+                <li className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-5">
+                  <p className="font-medium">3. Open the PR</p>
+                  <CopyBlock label="PR description" text={prHint} />
+                  {issue.data && (
+                    <p className="text-xs text-ink-2">
+                      Maintainers here usually reply within{" "}
+                      {hours(issue.data.repo.reply_hours)};{" "}
+                      {issue.data.repo.newcomer_merges_90d} newcomer PRs merged
+                      in the last 90 days.
+                    </p>
+                  )}
+                </li>
+              </ol>
+            }
           />
         )}
         {tab === "Code map" && (

@@ -28,6 +28,7 @@ DEPENDENCY_BONUS = 0.05
 CLAIMED_PENALTY = 0.3
 UNKNOWN_MAINTAINER = 0.4
 DEPENDENCY_SKILL_FLOOR = 0.6  # you use the library, so you know it at least this well
+CHOSEN_SKILL_FLOOR = 0.5  # you picked it in preferences, even with no public code in it
 
 EASY_LABELS = ("good first issue", "good-first-issue", "first-timers-only", "beginner", "easy", "starter")
 HARD_LABELS = ("hard", "complex", "advanced", "difficult", "breaking", "performance", "security", "architecture")
@@ -63,7 +64,10 @@ def skill_score(c: Candidate, fp: Fingerprint) -> tuple[float, str]:
     if c.source == "dependency":
         tech = KNOWN.get(c.matched, (c.matched.split(":", 1)[-1], ""))[0]
         return max(levels.get(tech, 0), DEPENDENCY_SKILL_FLOOR), tech
-    return levels.get(c.matched, 0), c.matched
+    level = levels.get(c.matched, 0)
+    if c.matched in {t.lower() for t in fp.preferences.languages}:
+        level = max(level, CHOSEN_SKILL_FLOOR)
+    return level, c.matched
 
 
 def maintainer_score(stats: RepoStats | None) -> float:

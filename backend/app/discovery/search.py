@@ -4,7 +4,7 @@ Searching issues directly mostly finds tiny personal repos whose owners label
 their own to-do lists "help wanted", and issue search can't filter by repo
 size or activity. So:
 
-  1. Repo search, one per top language (≤ MAX_LANGUAGES): mid-size, recently
+  1. Repo search, one per top language or chosen technology (≤ MAX_LANGUAGES): mid-size, recently
      pushed, not archived, with enough issues labelled for the user's level.
   2. Add the repos behind the user's dependencies (B3).
   3. Batched GraphQL calls fetch open, labelled issues from all of those repos,
@@ -26,7 +26,7 @@ from app.contracts import Fingerprint, Level
 from app.github import GitHub
 from app.registry import Registry
 
-MAX_LANGUAGES = 3
+MAX_LANGUAGES = 5  # technologies searched per user (each is one repo search; GitHub allows 30/min)
 MIN_LANGUAGE_LEVEL = 0.15
 REPOS_PER_LANGUAGE = 15
 MAX_DEPENDENCY_REPOS = 6
@@ -96,10 +96,30 @@ def top_languages(fp: Fingerprint) -> list[str]:
     return (strong or languages[:1])[:MAX_LANGUAGES]
 
 
+# GitHub's linguist names we search with `language:`. Anything else the user picks
+# (react, fastapi, docker…) is a framework or tool, searched as a repo topic.
+LANGUAGES = {
+    "python", "javascript", "typescript", "java", "go", "rust", "c", "c++", "c#", "ruby", "php",
+    "kotlin", "swift", "scala", "shell", "dart", "elixir", "haskell", "lua", "r", "julia", "perl",
+    "objective-c", "clojure", "zig", "ocaml", "erlang", "f#", "groovy", "powershell", "vue",
+}
+# Display names → GitHub topic slugs.
+TOPIC_ALIASES = {"next.js": "nextjs", "node.js": "nodejs", "vue.js": "vue", "react native": "react-native"}
+
+
+def tech_qualifier(tech: str) -> str:
+    """`language:python`, or `topic:react` for frameworks and tools."""
+    t = tech.strip().lower()
+    if t in LANGUAGES:
+        return f"language:{_quote(t)}"
+    slug = TOPIC_ALIASES.get(t, re.sub(r"[^a-z0-9]+", "-", t).strip("-"))
+    return f"topic:{slug}"
+
+
 def repo_query(fp: Fingerprint, language: str, today: date) -> str:
     pushed = (today - timedelta(days=PUSHED_DAYS)).isoformat()
     return (
-        f"language:{_quote(language)} {REPO_LABEL_QUALIFIER[fp.level]} stars:{STARS} "
+        f"{tech_qualifier(language)} {REPO_LABEL_QUALIFIER[fp.level]} stars:{STARS} "
         f"pushed:>={pushed} archived:false -user:{fp.login}"
     )
 

@@ -103,7 +103,10 @@ class IssueCard(BaseModel):
 
 class Matches(BaseModel):
     login: str
-    issues: list[IssueCard]
+    issues: list[IssueCard]  # this page (or all, when no page was asked for)
+    total: int = 0  # ranked issues available across all pages
+    page: int = 1
+    page_size: int = 0  # 0 = not paged: issues holds everything
     stale: bool = False  # true if any GitHub data came from the fallback cache
 
 

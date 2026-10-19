@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
 from app.agent import guide as guide_agent
@@ -68,7 +68,11 @@ async def get_candidates(login: str) -> Candidates:
 
 
 @router.get("/{login}/matches")
-async def get_matches(login: str) -> Matches:
+async def get_matches(
+    login: str,
+    page: int | None = Query(None, ge=1, description="1-based; omit to get the whole ranked list"),
+    page_size: int = Query(10, ge=1, le=40),
+) -> Matches:
     """B1: ranked issue cards with why-chips, skipping issues the user has skipped or started."""
     fp = await progress.get_user(login) or await get_fingerprint(login)
     seen = await progress.seen_issue_ids(fp.login)
@@ -76,7 +80,12 @@ async def get_matches(login: str) -> Matches:
     await progress.record_shown(fp.login, cards)
     saved = {c.id for c in await progress.saved_issues(fp.login)}
     cards = [c.model_copy(update={"saved": c.id in saved}) for c in cards]
-    return Matches(login=fp.login, issues=cards, stale=is_stale())
+    total = len(cards)
+    if page is not None:
+        cards = cards[(page - 1) * page_size : page * page_size]
+    return Matches(
+        login=fp.login, issues=cards, total=total, page=page or 1, page_size=page_size if page else 0, stale=is_stale()
+    )
 
 
 @router.get("/{login}/issues/{owner}/{repo}/{number}")
@@ -171,6 +180,13 @@ async def get_attempt(login: str, owner: str, repo: str, number: int) -> Attempt
     if not attempt:
         raise HTTPException(404, "no attempt for that issue")
     return attempt
+
+
+@router.delete("/{login}/attempts/{owner}/{repo}/{number}", status_code=204)
+async def remove_attempt(login: str, owner: str, repo: str, number: int) -> None:
+    """Remove an issue from the user's trail (deletes the attempt and its timeline)."""
+    if not await progress.remove_attempt(login, _issue_id(owner, repo, number)):
+        raise HTTPException(404, "no attempt for that issue")
 
 
 # --- Graph -------------------------------------------------------------------------------

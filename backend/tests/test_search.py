@@ -155,3 +155,17 @@ class _FrozenDatetime(datetime):
     @classmethod
     def now(cls, tz=None):
         return NOW
+
+
+def test_languages_use_language_qualifier_and_frameworks_use_topics():
+    assert search.tech_qualifier("Python") == "language:python"
+    assert search.tech_qualifier("c++") == 'language:"c++"'
+    assert search.tech_qualifier("react") == "topic:react"
+    assert search.tech_qualifier("Next.js") == "topic:nextjs"
+    assert search.tech_qualifier("React Native") == "topic:react-native"
+    assert "topic:fastapi" in search.repo_query(fp(), "fastapi", date(2026, 10, 18))
+
+
+def test_up_to_five_chosen_technologies_are_searched():
+    user = fp().model_copy(update={"preferences": Preferences(languages=["a", "b", "c", "d", "e", "f"])})
+    assert search.top_languages(user) == ["a", "b", "c", "d", "e"]
