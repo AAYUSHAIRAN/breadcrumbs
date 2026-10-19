@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 import { useFingerprint } from "@/lib/hooks";
 import { setLogin, useLogin } from "@/lib/session";
@@ -106,7 +106,10 @@ export function AppFrame({ children }: { children: React.ReactNode }) {
             </button>
             <span className="font-mono text-sm font-medium">breadcrumbs</span>
           </header>
-          <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-4 py-8 sm:px-8">{children}</main>
+          <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-4 py-8 sm:px-8">
+            {/* Remount every screen when the user changes, so no filters, pages or selections carry over. */}
+            <Fragment key={login ?? ""}>{children}</Fragment>
+          </main>
         </div>
       </div>
     </ToastProvider>

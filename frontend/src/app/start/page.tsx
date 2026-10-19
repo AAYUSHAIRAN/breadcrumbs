@@ -1,11 +1,11 @@
 import { Suspense } from "react";
 
-import { Onboarding } from "@/components/screens/Onboarding";
+import { OnboardingPage } from "@/components/screens/Onboarding";
 
 export default function StartPage() {
   return (
     <Suspense>
-      <Onboarding />
+      <OnboardingPage />
     </Suspense>
   );
 }

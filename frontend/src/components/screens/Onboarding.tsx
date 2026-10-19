@@ -81,7 +81,13 @@ function Reading({ login, onDone, onError }: { login: string; onDone: (u: Finger
   );
 }
 
-export function Onboarding() {
+/** Keyed by the ?u= sample, so following a different sample link starts over even though Next preserves page state. */
+export function OnboardingPage() {
+  const sample = useSearchParams().get("u");
+  return <Onboarding key={sample ?? ""} />;
+}
+
+function Onboarding() {
   const router = useRouter();
   const remembered = useLogin();
   const { mutate } = useSWRConfig();
@@ -187,6 +193,17 @@ export function Onboarding() {
                 <span className="capitalize">{step.user.level}</span> · {step.user.merged_prs} merged PRs in other projects ·{" "}
                 {step.user.dependencies.length} libraries you depend on
               </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setStep({ name: "enter" });
+                  setInput("");
+                  router.replace("/start"); // drop ?u= so a refresh doesn't reload this profile
+                }}
+                className="mt-1 text-sm text-accent-strong hover:underline"
+              >
+                Not {step.user.name?.split(" ")[0] ?? step.user.login}? Pick someone else
+              </button>
             </div>
           </div>
           <section className="rounded-xl border border-border bg-surface p-5">
@@ -205,6 +222,9 @@ export function Onboarding() {
               preload(["matches", user.login], () => api.matches(user.login));
               setLogin(user.login);
               router.push("/discover");
+              // Next keeps this page's state for back/forward navigation: start fresh next time.
+              setStep({ name: "enter" });
+              setInput("");
             }}
           />
         </div>
